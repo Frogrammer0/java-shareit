@@ -15,4 +15,11 @@ public class UserMapper {
                 .email(user.getEmail())
                 .build();
     }
+
+    public static User toUser(UserDto userDto) {
+        return User.builder()
+                .name(userDto.getName())
+                .email(userDto.getEmail())
+                .build();
+    }
 }

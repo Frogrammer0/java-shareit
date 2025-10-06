@@ -1,10 +1,7 @@
 package ru.practicum.shareit.user;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.List;
@@ -19,6 +16,10 @@ public class UserController {
 
     private final UserService userService;
 
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
     @GetMapping
     public List<UserDto> getAllUsers() {
         return userService.getAllUsers();
@@ -27,6 +28,11 @@ public class UserController {
     @GetMapping("/{id}")
     public UserDto getUserById(@PathVariable long id){
         return userService.getUserById(id);
+    }
+
+    @PostMapping
+    public UserDto create(@RequestBody UserDto userDto) {
+        return userService.create(userDto);
     }
 
 }

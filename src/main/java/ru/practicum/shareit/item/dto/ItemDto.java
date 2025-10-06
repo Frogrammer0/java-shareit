@@ -18,6 +18,6 @@ public class ItemDto {
     String name;
     String description;
     Boolean isAvailable;
-    long request;
+    long requestId;
 
 }
