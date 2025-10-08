@@ -135,6 +135,10 @@ public class InMemoryItemStorage {
     public List<ItemDto> search(String text) {
         String substr = text.toLowerCase().trim();
 
+        if (text.isBlank()) {
+            return List.of();
+        }
+
         return items.values().stream()
                 .filter(item ->
                         (item.getName().toLowerCase().contains(substr) ||
