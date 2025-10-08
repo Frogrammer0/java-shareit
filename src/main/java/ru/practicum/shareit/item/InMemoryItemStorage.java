@@ -22,12 +22,15 @@ import java.util.stream.Collectors;
 public class InMemoryItemStorage {
     private final UserService userService;
     private final ItemValidator itemValidator;
+    private final ItemMapper itemMapper;
     private final Map<Long, Item> items = new HashMap<>();
 
+
     @Autowired
-    public InMemoryItemStorage(UserService userService, ItemValidator itemValidator) {
+    public InMemoryItemStorage(UserService userService, ItemValidator itemValidator, ItemMapper itemMapper) {
         this.userService = userService;
         this.itemValidator = itemValidator;
+        this.itemMapper = itemMapper;
     }
 
     public Collection<Item> getAllItemsByUser(long userId) {
@@ -41,7 +44,7 @@ public class InMemoryItemStorage {
     }
 
     public ItemDto getItemById(long id) {
-        return ItemMapper.toItemDto(items.get(id));
+        return itemMapper.toItemDto(items.get(id));
     }
 
     public ItemDto create(ItemDto itemDto, long userId) {
@@ -51,12 +54,12 @@ public class InMemoryItemStorage {
 
         userService.getUserById(userId);
         itemDto.setOwnerId(userId);
-        Item item = ItemMapper.toItem(itemDto);
+        Item item = itemMapper.toItem(itemDto);
         item.setId(getNextId());
 
         items.put(item.getId(), item);
         log.info("вещь {} помещена в базу", item);
-        return ItemMapper.toItemDto(item);
+        return itemMapper.toItemDto(item);
     }
 
     public ItemDto edit(ItemDto newItemDto, long userId, long itemId) {
@@ -82,7 +85,7 @@ public class InMemoryItemStorage {
             oldItem.setAvailable(newItemDto.getAvailable());
         }
 
-        return ItemMapper.toItemDto(oldItem);
+        return itemMapper.toItemDto(oldItem);
 
     }
 
@@ -138,7 +141,7 @@ public class InMemoryItemStorage {
                                 item.getDescription().toLowerCase().contains(substr)) &&
                                 (item.getAvailable())
                         )
-                .map(ItemMapper::toItemDto)
+                .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 }

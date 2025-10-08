@@ -15,16 +15,18 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class ItemServiceImpl implements ItemService {
     InMemoryItemStorage itemStorage;
+    ItemMapper itemMapper;
 
     @Autowired
-    public ItemServiceImpl(InMemoryItemStorage itemStorage) {
+    public ItemServiceImpl(InMemoryItemStorage itemStorage, ItemMapper itemMapper) {
         this.itemStorage = itemStorage;
+        this.itemMapper = itemMapper;
     }
 
     @Override
     public List<ItemDto> getAllItemsByUser(long userId) {
         return itemStorage.getAllItemsByUser(userId).stream()
-                .map(ItemMapper::toItemDto)
+                .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
