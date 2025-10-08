@@ -17,15 +17,16 @@ import java.util.stream.Collectors;
 @Repository
 public class InMemoryRequestStorage {
     private final Map<Long, ItemRequest> requests = new HashMap<>();
+    ItemRequestMapper itemRequestMapper;
 
     public Collection<ItemRequestDto> getAllRequest() {
         return requests.values().stream()
-                .map(ItemRequestMapper::toItemRequestDto)
+                .map(itemRequestMapper::toItemRequestDto)
                 .collect(Collectors.toList());
     }
 
     public ItemRequestDto getRequestById(long id) {
-        return ItemRequestMapper.toItemRequestDto(requests.get(id));
+        return itemRequestMapper.toItemRequestDto(requests.get(id));
     }
 
     public ItemRequest getRowRequestById(long id) {
@@ -42,7 +43,7 @@ public class InMemoryRequestStorage {
         itemRequestDto.setId(getNextId());
         itemRequestDto.setCreated(LocalDate.now());
 
-        ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto);
+        ItemRequest itemRequest = itemRequestMapper.toItemRequest(itemRequestDto);
         requests.put(itemRequest.getId(), itemRequest);
 
         return itemRequestDto;

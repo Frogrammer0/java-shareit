@@ -12,12 +12,7 @@ import ru.practicum.shareit.user.InMemoryUserStorage;
 public class ItemRequestMapper {
     static InMemoryUserStorage userStorage;
 
-    @Autowired
-    public ItemRequestMapper(InMemoryUserStorage userStorage) {
-        ItemRequestMapper.userStorage = userStorage;
-    }
-
-    public static ItemRequestDto toItemRequestDto(ItemRequest itemRequest) {
+    public ItemRequestDto toItemRequestDto(ItemRequest itemRequest) {
         return ItemRequestDto.builder()
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
@@ -26,7 +21,7 @@ public class ItemRequestMapper {
                 .build();
     }
 
-    public static ItemRequest toItemRequest(ItemRequestDto itemRequestDto) {
+    public ItemRequest toItemRequest(ItemRequestDto itemRequestDto) {
         return ItemRequest.builder()
                 .id(itemRequestDto.getId())
                 .description(itemRequestDto.getDescription())
