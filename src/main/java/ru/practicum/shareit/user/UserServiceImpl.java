@@ -1,13 +1,23 @@
 package ru.practicum.shareit.user;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class UserServiceImpl implements UserService{
+@Slf4j
+@Service
+public class UserServiceImpl implements UserService {
     InMemoryUserStorage userStorage;
+
+    @Autowired
+    public UserServiceImpl(InMemoryUserStorage userStorage) {
+        this.userStorage = userStorage;
+    }
 
     @Override
     public List<UserDto> getAllUsers() {
@@ -18,6 +28,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserDto getUserById(long id) {
+        log.info("получение пользователя в UserService id = {}", id);
         return userStorage.getUserById(id);
     }
 
@@ -26,9 +37,10 @@ public class UserServiceImpl implements UserService{
         return userStorage.create(userDto);
     }
 
+
     @Override
-    public UserDto update(UserDto userDto) {
-        return userStorage.update(userDto);
+    public UserDto edit(long userId, UserDto userDto) {
+        return userStorage.edit(userId, userDto);
     }
 
     @Override

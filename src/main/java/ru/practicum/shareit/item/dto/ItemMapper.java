@@ -2,15 +2,19 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.InMemoryRequestStorage;
 import ru.practicum.shareit.user.InMemoryUserStorage;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Component
 public class ItemMapper {
     static InMemoryUserStorage userStorage;
     static InMemoryRequestStorage requestStorage;
 
+    @Autowired
     public ItemMapper(InMemoryUserStorage userStorage, InMemoryRequestStorage requestStorage) {
       ItemMapper.userStorage = userStorage;
       ItemMapper.requestStorage = requestStorage;
@@ -22,7 +26,7 @@ public class ItemMapper {
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
-                .isAvailable(item.getIsAvailable())
+                .available(item.getAvailable())
                 .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
                 .ownerId(item.getOwner().getId())
                 .build();
@@ -33,9 +37,9 @@ public class ItemMapper {
                 .id(itemDto.getId())
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
-                .isAvailable(itemDto.getIsAvailable())
-                .request(requestStorage.getRequestById(itemDto.getRequestId()))
-                .owner(userStorage.getRowUser(itemDto.getOwnerId()))
+                .available(itemDto.getAvailable())
+                .request(itemDto.getRequestId() != null ? requestStorage.getRowRequestById(itemDto.getRequestId()) : null)
+                .owner(userStorage.getRowUserById(itemDto.getOwnerId()))
                 .build();
     }
 }

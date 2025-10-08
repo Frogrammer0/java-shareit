@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.DuplicatedDataException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
+@Repository
 public class InMemoryUserStorage {
     private final Map<Long, User> users = new HashMap<>();
 
@@ -20,27 +22,21 @@ public class InMemoryUserStorage {
     }
 
     public UserDto getUserById(long id) {
+        isUserExist(id);
         return UserMapper.toUserDto(users.get(id));
     }
 
-    public User getRowUser(long id) {
+    public User getRowUserById(long id) {
         return users.get(id);
     }
 
     public UserDto create(UserDto userDto) {
-        boolean isMailExist = users.values()
-                .stream()
-                .map(User::getEmail)
-                .anyMatch(mail -> mail.equals(userDto.getEmail()));
-        if (isMailExist) {
-            log.error("введен уже использующийся имейл");
-            throw new DuplicatedDataException("Этот имейл уже используется");
-        }
+        isMailExist(userDto.getEmail());
 
         User user = UserMapper.toUser(userDto);
 
         user.setId(getNextId());
-        log.info("пользователю присвоен id= {}", userDto.getId());
+        log.info("пользователю присвоен id = {}", user.getId());
 
         users.put(user.getId(), user);
         log.info("пользователь добавлен в базу");
@@ -49,44 +45,31 @@ public class InMemoryUserStorage {
         return UserMapper.toUserDto(user);
     }
 
-    public UserDto update(UserDto newUserDto) {
-        if (newUserDto.getId() == 0) {
-            log.error("введен id равный 0");
-            throw new ValidationException("Id должен быть указан");
+    public UserDto edit(long userId, UserDto newUserDto) {
+
+        isUserExist(userId);
+        notNullId(userId);
+        isMailExist(newUserDto.getEmail());
+
+        User oldUser = users.get(userId);
+
+        // если пользователь найден и все условия соблюдены, обновляем его содержимое
+        if (newUserDto.getName() != null) {
+            oldUser.setName(newUserDto.getName());
+            log.info("изменено имя пользователя");
         }
 
-
-        if (users.containsKey(newUserDto.getId())) {
-            User oldUser = users.get(newUserDto.getId());
-
-            // если пользователь найден и все условия соблюдены, обновляем его содержимое
-            if (newUserDto.getName() != null) {
-                oldUser.setName(newUserDto.getName());
-                log.info("изменено имя пользователя");
-            }
-
-            if (newUserDto.getEmail() != null) {
-                oldUser.setEmail(newUserDto.getEmail());
-                log.info("изменена почта пользователя");
-            }
-
-
-            return UserMapper.toUserDto(oldUser);
+        if (newUserDto.getEmail() != null) {
+            oldUser.setEmail(newUserDto.getEmail());
+            log.info("изменена почта пользователя");
         }
-        log.error("пользователь с введенным id не найден");
-        throw new NotFoundException("Пользователь с id = " + newUserDto.getId() + " не найден");
+
+        return UserMapper.toUserDto(oldUser);
     }
 
     public void delete(Long id) {
-        if (id == 0) {
-            log.error("введен id равный 0");
-            throw new ValidationException("Id должен быть указан");
-        }
-
-        if (!users.containsKey(id)) {
-            log.error("пользователь с введенным id не найден");
-            throw new NotFoundException("Пользователь с id = " + id + " не найден");
-        }
+        isUserExist(id);
+        notNullId(id);
 
         users.remove(id);
         log.info("пользователь с id = {} удален", id);
@@ -100,6 +83,36 @@ public class InMemoryUserStorage {
                 .mapToLong(id -> id)
                 .max()
                 .orElse(0);
-        return ++currentMaxId;
+        currentMaxId++;
+        log.info("создан id = {}", currentMaxId);
+        return currentMaxId;
     }
+
+    private void isUserExist(long userId) {
+        if (!users.containsKey(userId)) {
+            log.error("пользователь с введенным id = {} не найден", userId);
+            throw new NotFoundException("Пользователь с id = " + userId + " не найден");
+        }
+    }
+
+    private void notNullId(long id) {
+        if (id == 0) {
+            log.error("введен id равный 0");
+            throw new ValidationException("Id должен быть указан");
+        }
+
+    }
+
+    private void isMailExist(String email) {
+        boolean isMailExist = users.values()
+                .stream()
+                .map(User::getEmail)
+                .anyMatch(mail -> mail.equals(email));
+        if (isMailExist) {
+            log.error("введен уже использующийся имейл");
+            throw new DuplicatedDataException("Этот имейл уже используется");
+        }
+    }
+
+
 }

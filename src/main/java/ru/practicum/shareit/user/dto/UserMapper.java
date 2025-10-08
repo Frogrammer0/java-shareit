@@ -3,9 +3,11 @@ package ru.practicum.shareit.user.dto;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 import ru.practicum.shareit.user.User;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Component
 public class UserMapper {
 
     public static UserDto toUserDto(User user) {
