@@ -4,36 +4,28 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.DuplicatedDataException;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.ValidationException;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserMapper;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Repository
-public class InMemoryUserStorage {
+public class InMemoryUserStorage implements UserStorage {
     private final Map<Long, User> users = new HashMap<>();
 
     public Collection<User> getAllUsers() {
+        log.info("запрос всех пользователей");
         return users.values();
     }
 
-    public UserDto getUserById(long id) {
-        isUserExist(id);
-        return UserMapper.toUserDto(users.get(id));
+    public Optional<User> getUserById(long id) {
+        log.info("запрос пользователя с id = {}", id);
+        return Optional.of(users.get(id));
     }
 
-    public User getRowUserById(long id) {
-        return users.get(id);
-    }
-
-    public UserDto create(UserDto userDto) {
-        isMailExist(userDto.getEmail());
-
-        User user = UserMapper.toUser(userDto);
+    public User create(User user) {
 
         user.setId(getNextId());
         log.info("пользователю присвоен id = {}", user.getId());
@@ -41,36 +33,30 @@ public class InMemoryUserStorage {
         users.put(user.getId(), user);
         log.info("пользователь добавлен в базу");
 
-
-        return UserMapper.toUserDto(user);
+        return user;
     }
 
-    public UserDto edit(long userId, UserDto newUserDto) {
-
-        isUserExist(userId);
-        notNullId(userId);
-        isMailExist(newUserDto.getEmail());
-
+    public User edit(long userId, User newUser) {
         User oldUser = users.get(userId);
 
-        // если пользователь найден и все условия соблюдены, обновляем его содержимое
-        if (newUserDto.getName() != null) {
-            oldUser.setName(newUserDto.getName());
-            log.info("изменено имя пользователя");
+        if (newUser.getName() != null) {
+            if (!newUser.getName().isBlank()) {
+                oldUser.setName(newUser.getName());
+                log.info("изменено имя пользователя");
+            }
         }
 
-        if (newUserDto.getEmail() != null) {
-            oldUser.setEmail(newUserDto.getEmail());
-            log.info("изменена почта пользователя");
+        if (newUser.getEmail() != null) {
+            if (!newUser.getEmail().isBlank() || newUser.getEmail().contains("@")) {
+                oldUser.setEmail(newUser.getEmail());
+                log.info("изменена почта пользователя");
+            }
         }
 
-        return UserMapper.toUserDto(oldUser);
+        return oldUser;
     }
 
     public void delete(Long id) {
-        isUserExist(id);
-        notNullId(id);
-
         users.remove(id);
         log.info("пользователь с id = {} удален", id);
     }
@@ -88,22 +74,14 @@ public class InMemoryUserStorage {
         return currentMaxId;
     }
 
-    private void isUserExist(long userId) {
+    public void isUserExist(long userId) {
         if (!users.containsKey(userId)) {
             log.error("пользователь с введенным id = {} не найден", userId);
             throw new NotFoundException("Пользователь с id = " + userId + " не найден");
         }
     }
 
-    private void notNullId(long id) {
-        if (id == 0) {
-            log.error("введен id равный 0");
-            throw new ValidationException("Id должен быть указан");
-        }
-
-    }
-
-    private void isMailExist(String email) {
+    public void isMailExist(String email) {
         boolean isMailExist = users.values()
                 .stream()
                 .map(User::getEmail)

@@ -36,7 +36,6 @@ public class UserController {
 
     @PostMapping
     public UserDto create(@RequestBody UserDto userDto) {
-        userValidator.validate(userDto);
         return userService.create(userDto);
     }
 

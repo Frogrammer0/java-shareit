@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.InMemoryRequestStorage;
 import ru.practicum.shareit.user.InMemoryUserStorage;
@@ -34,7 +35,9 @@ public class ItemMapper {
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
                 .request(itemDto.getRequestId() != null ? requestStorage.getRowRequestById(itemDto.getRequestId()) : null)
-                .owner(userStorage.getRowUserById(itemDto.getOwnerId()))
+                .owner(userStorage.getUserById(itemDto.getOwnerId()).orElseThrow(
+                        () -> new NotFoundException("Пользователь не найден")
+                ))
                 .build();
     }
 }
