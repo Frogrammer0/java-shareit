@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.ForbiddenException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.User;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,13 +23,11 @@ public class InMemoryItemStorage implements ItemStorage {
 
 
     public Optional<Item> getItemById(long id) {
-        return Optional.of(items.get(id));
+        return Optional.ofNullable(items.get(id));
     }
 
-    public Item create(Item item, User user) {
+    public Item create(Item item) {
         log.info("вещь {} попала в метод create для добавления в базу", item);
-
-        item.setOwner(user);
         item.setId(getNextId());
 
         items.put(item.getId(), item);
@@ -38,22 +35,18 @@ public class InMemoryItemStorage implements ItemStorage {
         return item;
     }
 
-    public Item edit(Item newItem, long userId, long itemId) {
+    public Item edit(Item newItem, long itemId) {
         log.info("вещь {} попала в метод edit для изменения в базе", newItem);
         newItem.setId(itemId);
 
         Item oldItem = items.get(itemId);
 
-        if (newItem.getName() != null) {
-            if (!newItem.getName().isBlank()) {
-                oldItem.setName(newItem.getName());
-            }
+        if (newItem.getName() != null && !newItem.getName().isBlank()) {
+            oldItem.setName(newItem.getName());
         }
 
-        if (newItem.getDescription() != null) {
-            if (!newItem.getDescription().isBlank()) {
+        if (newItem.getDescription() != null && !newItem.getDescription().isBlank()) {
                 oldItem.setDescription(newItem.getDescription());
-            }
         }
 
         if (newItem.getAvailable() != null) {

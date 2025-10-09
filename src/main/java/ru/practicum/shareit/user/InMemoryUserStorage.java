@@ -22,7 +22,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     public Optional<User> getUserById(long id) {
         log.info("запрос пользователя с id = {}", id);
-        return Optional.of(users.get(id));
+        return Optional.ofNullable(users.get(id));
     }
 
     public User create(User user) {
@@ -39,18 +39,14 @@ public class InMemoryUserStorage implements UserStorage {
     public User edit(long userId, User newUser) {
         User oldUser = users.get(userId);
 
-        if (newUser.getName() != null) {
-            if (!newUser.getName().isBlank()) {
-                oldUser.setName(newUser.getName());
-                log.info("изменено имя пользователя");
-            }
+        if (newUser.getName() != null && !newUser.getName().isBlank()) {
+            oldUser.setName(newUser.getName());
+            log.info("изменено имя пользователя");
         }
 
-        if (newUser.getEmail() != null) {
-            if (!newUser.getEmail().isBlank() || newUser.getEmail().contains("@")) {
+        if (newUser.getEmail() != null && !newUser.getEmail().isBlank() && newUser.getEmail().contains("@")) {
                 oldUser.setEmail(newUser.getEmail());
                 log.info("изменена почта пользователя");
-            }
         }
 
         return oldUser;

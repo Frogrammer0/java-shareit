@@ -11,29 +11,22 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
-public class InMemoryRequestStorage {
+public class InMemoryRequestStorage implements ItemRequestStorage {
     private final Map<Long, ItemRequest> requests = new HashMap<>();
     ItemRequestMapper itemRequestMapper;
 
-    public Collection<ItemRequestDto> getAllRequest() {
-        return requests.values().stream()
-                .map(itemRequestMapper::toItemRequestDto)
-                .collect(Collectors.toList());
+    public Collection<ItemRequest> getAllRequest() {
+        return requests.values();
     }
 
-    public ItemRequestDto getRequestById(long id) {
-        return itemRequestMapper.toItemRequestDto(requests.get(id));
-    }
-
-    public ItemRequest getRowRequestById(long id) {
+    public ItemRequest getRequestById(long id) {
         return requests.get(id);
     }
 
-    public ItemRequestDto create(ItemRequestDto itemRequestDto, long userId) {
+    public ItemRequest create(ItemRequestDto itemRequestDto, long userId) {
         if (itemRequestDto.getDescription() == null || itemRequestDto.getDescription().isBlank()) {
             log.error("не указано описание");
             throw new ValidationException("не указано описание");
@@ -46,7 +39,7 @@ public class InMemoryRequestStorage {
         ItemRequest itemRequest = itemRequestMapper.toItemRequest(itemRequestDto);
         requests.put(itemRequest.getId(), itemRequest);
 
-        return itemRequestDto;
+        return itemRequest;
     }
 
     private Long getNextId() {
