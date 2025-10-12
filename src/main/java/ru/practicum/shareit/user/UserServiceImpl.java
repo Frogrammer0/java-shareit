@@ -1,0 +1,73 @@
+package ru.practicum.shareit.user;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Slf4j
+@Service
+public class UserServiceImpl implements UserService {
+    UserStorage userStorage;
+    UserMapper userMapper;
+    UserValidator userValidator;
+
+    @Autowired
+    public UserServiceImpl(InMemoryUserStorage userStorage, UserMapper userMapper, UserValidator userValidator) {
+        this.userStorage = userStorage;
+        this.userMapper = userMapper;
+        this.userValidator = userValidator;
+    }
+
+    @Override
+    public List<UserDto> getAllUsers() {
+        log.info("получение всех пользователей в UserService");
+        return userStorage.getAllUsers().stream()
+                .map(userMapper::toUserDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserDto getUserById(long id) {
+        log.info("получение пользователя в UserService id = {}", id);
+        return userMapper.toUserDto(getUserOrThrow(id));
+    }
+
+    @Override
+    public UserDto create(UserDto userDto) {
+        log.info("создание пользователя в UserService");
+        userValidator.validate(userDto);
+        userStorage.isMailExist(userDto.getEmail());
+        User user = userMapper.toUser(userDto);
+        return userMapper.toUserDto(userStorage.create(user));
+    }
+
+
+    @Override
+    public UserDto edit(long userId, UserDto userDto) {
+        log.info("редактирование пользователя в UserService");
+        userStorage.isUserExist(userId);
+        userStorage.isMailExist(userDto.getEmail());
+        User user = userMapper.toUser(userDto);
+        return userMapper.toUserDto(userStorage.edit(userId, user));
+    }
+
+    @Override
+    public void delete(Long id) {
+        log.info("удаление пользователя в UserService");
+        userStorage.isUserExist(id);
+        userStorage.delete(id);
+    }
+
+    private User getUserOrThrow(long id) {
+        return userStorage.getUserById(id).orElseThrow(
+                () -> new NotFoundException("пользователь с введенным id = " + id + " не найдена")
+        );
+    }
+
+}
