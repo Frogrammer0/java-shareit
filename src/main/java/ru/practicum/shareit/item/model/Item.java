@@ -6,6 +6,8 @@ import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
 
+import java.util.List;
+
 
 @Data
 @Builder
