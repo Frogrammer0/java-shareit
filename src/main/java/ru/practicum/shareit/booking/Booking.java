@@ -7,17 +7,14 @@ import ru.practicum.shareit.user.User;
 
 import java.time.LocalDate;
 
-/**
- * TODO Sprint add-bookings.
- */
 
 @Data
 @Builder
 public class Booking {
 
     long id;
-    LocalDate start;
-    LocalDate end;
+    LocalDate started;
+    LocalDate ended;
     Item item;
     User booker;
     Status status;
