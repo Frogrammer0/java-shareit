@@ -12,10 +12,8 @@ description VARCHAR(255),
 available BOOLEAN,
 user_id BIGINT NOT NULL,
 request_id BIGINT,
-booking_id BIGINT,
 CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id),
-CONSTRAINT fk_request FOREIGN KEY (request_id) REFERENCES requests(id),
-CONSTRAINT fk_booking FOREIGN KEY (booking_id) REFERENCES bookings(id)
+CONSTRAINT fk_request FOREIGN KEY (request_id) REFERENCES requests(id)
 );
 
 CREATE TYPE booking_status AS ENUM ('WAITING','APPROVED','REJECTED','CANCELED');

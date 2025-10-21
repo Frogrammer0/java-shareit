@@ -10,7 +10,9 @@ import java.time.LocalDate;
 
 @Entity
 @Builder
-@Getter @Setter @ToString
+@Getter
+@Setter
+@ToString
 @Table(name = "bookings", schema = "public")
 public class Booking {
 
@@ -18,11 +20,11 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
-    @Column
-    LocalDate started;
+    @Column(name = "started")
+    LocalDate start;
 
-    @Column
-    LocalDate ended;
+    @Column(name = "ended")
+    LocalDate end;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")

@@ -9,9 +9,9 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.InMemoryRequestStorage;
-import ru.practicum.shareit.user.InMemoryUserStorage;
 import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserStorage;
+import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.UserValidator;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,26 +20,31 @@ import java.util.stream.Collectors;
 @Service
 @NoArgsConstructor(force = true)
 public class ItemServiceImpl implements ItemService {
-    ItemStorage itemStorage;
+    ItemRepository itemRepository;
+    UserRepository userRepository;
     ItemMapper itemMapper;
     ItemValidator itemValidator;
-    UserStorage userStorage;
+    UserValidator userValidator;
 
     @Autowired
-    public ItemServiceImpl(InMemoryItemStorage itemStorage, InMemoryUserStorage userStorage,
+    public ItemServiceImpl(ItemRepository itemRepository, UserRepository userRepository,
                            ItemMapper itemMapper, ItemValidator itemValidator,
+                           UserValidator userValidator,
                            InMemoryRequestStorage requestStorage) {
-        this.itemStorage = itemStorage;
         this.itemMapper = itemMapper;
         this.itemValidator = itemValidator;
-        this.userStorage = userStorage;
+        this.userValidator = userValidator;
+        this.itemRepository = itemRepository;
+        this.userRepository = userRepository;
+
     }
+
 
     @Override
     public List<ItemDto> getAllItemsByUser(long userId) {
         log.info("вызван метод getAllItemsByUser в ItemService");
-        userStorage.isUserExist(userId);
-        return itemStorage.getAllItemsByUser(userId).stream()
+        userValidator.isUserExists(userId);
+        return itemRepository.findAllByUserId(userId).stream()
                 .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
@@ -56,52 +61,52 @@ public class ItemServiceImpl implements ItemService {
         itemValidator.validate(itemDto);
         User user = getUserOrThrow(userId);
         Item item = itemMapper.toItem(itemDto, user);
-        return itemMapper.toItemDto(itemStorage.create(item));
+        return itemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override
     public void delete(long itemId, long userId) {
         log.info("вызван метод delete в ItemService");
-        itemStorage.hasAccess(itemId, userId);
-        itemStorage.isItemExist(itemId);
-        userStorage.isUserExist(userId);
-        itemStorage.delete(itemId, userId);
+        itemValidator.hasAccess(itemId, userId);
+        itemValidator.isItemExists(itemId);
+        userValidator.isUserExists(userId);
+        itemRepository.deleteById(itemId);
     }
 
     @Override
     public ItemDto edit(ItemDto itemDto, long userId, long itemId) {
         log.info("вызван метод edit в ItemService");
-        itemStorage.isItemExist(itemId);
-        itemStorage.hasAccess(itemId, userId);
+        itemValidator.isItemExists(itemId);
+        itemValidator.hasAccess(itemId, userId);
         User user = getUserOrThrow(userId);
         Item item = itemMapper.toItem(itemDto, user);
-        return itemMapper.toItemDto(itemStorage.edit(item, itemId));
+        return itemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override
-    public List<ItemDto> search(String text) {
+    public List<ItemDto> search(String query) {
         log.info("вызван метод search в ItemService");
-        String substr = text.toLowerCase().trim();
 
-        if (text.isBlank()) {
+        if (query.isBlank()) {
             return List.of();
         }
 
-        return itemStorage.search(substr).stream()
+        return itemRepository.findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query)
+                .stream()
                 .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
     private Item getItemOrThrow(long id) {
         log.info("вызван метод getItemOrThrow в ItemService");
-        return itemStorage.getItemById(id).orElseThrow(
+        return itemRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("вещь с введенным id = " + id + " не найдена")
         );
     }
 
     private User getUserOrThrow(long userId) {
         log.info("вызван метод getUserOrThrow в ItemService");
-        return userStorage.getUserById(userId).orElseThrow(
+        return userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("Пользователь c id " + userId + " не найден")
         );
     }

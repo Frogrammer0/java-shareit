@@ -13,13 +13,13 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
-    UserStorage userStorage;
+    UserRepository userRepository;
     UserMapper userMapper;
     UserValidator userValidator;
 
     @Autowired
-    public UserServiceImpl(InMemoryUserStorage userStorage, UserMapper userMapper, UserValidator userValidator) {
-        this.userStorage = userStorage;
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, UserValidator userValidator) {
+        this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.userValidator = userValidator;
     }
@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> getAllUsers() {
         log.info("получение всех пользователей в UserService");
-        return userStorage.getAllUsers().stream()
+        return userRepository.findAll().stream()
                 .map(userMapper::toUserDto)
                 .collect(Collectors.toList());
     }
@@ -42,30 +42,30 @@ public class UserServiceImpl implements UserService {
     public UserDto create(UserDto userDto) {
         log.info("создание пользователя в UserService");
         userValidator.validate(userDto);
-        userStorage.isMailExist(userDto.getEmail());
+        userValidator.isMailExists(userDto.getEmail());
         User user = userMapper.toUser(userDto);
-        return userMapper.toUserDto(userStorage.create(user));
+        return userMapper.toUserDto(userRepository.save(user));
     }
 
 
     @Override
     public UserDto edit(long userId, UserDto userDto) {
         log.info("редактирование пользователя в UserService");
-        userStorage.isUserExist(userId);
-        userStorage.isMailExist(userDto.getEmail());
+        userValidator.isUserExists(userId);
+        userValidator.isMailExists(userDto.getEmail());
         User user = userMapper.toUser(userDto);
-        return userMapper.toUserDto(userStorage.edit(userId, user));
+        return userMapper.toUserDto(userRepository.save(user));
     }
 
     @Override
     public void delete(Long id) {
         log.info("удаление пользователя в UserService");
-        userStorage.isUserExist(id);
-        userStorage.delete(id);
+        userValidator.isUserExists(id);
+        userRepository.deleteById(id);
     }
 
     private User getUserOrThrow(long id) {
-        return userStorage.getUserById(id).orElseThrow(
+        return userRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("пользователь с введенным id = " + id + " не найдена")
         );
     }
