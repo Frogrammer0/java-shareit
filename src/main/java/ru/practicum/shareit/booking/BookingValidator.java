@@ -42,7 +42,7 @@ public class BookingValidator {
     }
 
     public void isBookingExists(long bookingId) {
-        if(!bookingRepository.existsById(bookingId)) {
+        if (!bookingRepository.existsById(bookingId)) {
             log.error("бронирования с id = {} не существует", bookingId);
             throw new ValidationException("бронирования с id = " + bookingId + " не существует");
         }
@@ -50,7 +50,7 @@ public class BookingValidator {
 
 
     public void isItemAvailable(long itemId) {
-        if(!itemRepository.existsByIdAndAvailableIsTrue(itemId)) {
+        if (!itemRepository.existsByIdAndAvailableIsTrue(itemId)) {
             log.error("вещь с id = {} недоступна", itemId);
             throw new ValidationException("вещь с id = " + itemId + "  недоступна");
         }
@@ -71,7 +71,7 @@ public class BookingValidator {
     }
 
     public void hasItem(long userId) {
-        if(!itemRepository.existsByOwnerId(userId)) {
+        if (!itemRepository.existsByOwnerId(userId)) {
             log.error("отсутствие вещей у пользователя с id = {} ", userId);
             throw new NotFoundException("отсутствие вещей у пользователя с id = " + userId);
         }

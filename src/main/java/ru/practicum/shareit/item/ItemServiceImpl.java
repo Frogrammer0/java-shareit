@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentMapper;
@@ -22,7 +21,6 @@ import ru.practicum.shareit.user.UserValidator;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -112,8 +110,9 @@ public class ItemServiceImpl implements ItemService {
             return List.of();
         }
 
-        return itemRepository.findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableIsTrue
-                        (query, query)
+        return itemRepository.findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(
+                        query, query
+                )
                 .stream()
                 .filter(Item::getAvailable)
                 .map(item -> itemMapper.toItemDto(item, getCommentByItem(item.getId())))
