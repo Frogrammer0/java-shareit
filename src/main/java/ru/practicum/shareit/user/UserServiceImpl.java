@@ -54,6 +54,7 @@ public class UserServiceImpl implements UserService {
         userValidator.isUserExists(userId);
         userValidator.isMailExists(userDto.getEmail());
         User user = userMapper.toUser(userDto);
+        user.setId(userId);
         return userMapper.toUserDto(userRepository.save(user));
     }
 

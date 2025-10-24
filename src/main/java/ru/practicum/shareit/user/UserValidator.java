@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.DuplicatedDataException;
 import ru.practicum.shareit.exceptions.NotFoundException;
@@ -10,7 +11,12 @@ import ru.practicum.shareit.user.dto.UserDto;
 @Slf4j
 @Component
 public class UserValidator {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    @Autowired
+    public UserValidator(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public void validate(UserDto userDto) {
         validateEmail(userDto.getEmail());
@@ -47,7 +53,7 @@ public class UserValidator {
     }
 
     public void isMailExists(String email) {
-        if (!userRepository.existsByEmail(email)) {
+        if (userRepository.existsByEmail(email)) {
             log.error("введен уже использующийся имейл");
             throw new DuplicatedDataException("Этот имейл уже используется");
         }
