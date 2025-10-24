@@ -65,7 +65,7 @@ public class ItemServiceImpl implements ItemService {
         userValidator.isUserExists(userId);
         LocalDateTime now = LocalDateTime.now();
         return itemRepository.findAllByOwnerId(userId).stream()
-                .map(itemMapper::toItemDto)
+                .map(item -> itemMapper.toItemDto(item, getCommentByItem(item.getId())))
                 .map(item -> setLastAndNextBooking(item, now))
                 .collect(Collectors.toList());
     }
@@ -73,7 +73,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto getItemById(long id) {
         log.info("вызван метод getItemById в ItemService");
-        return itemMapper.toItemDto(getItemOrThrow(id));
+        return itemMapper.toItemDto(getItemOrThrow(id), getCommentByItem(id));
     }
 
     @Override
@@ -82,7 +82,7 @@ public class ItemServiceImpl implements ItemService {
         itemValidator.validate(itemDto);
         User user = getUserOrThrow(userId);
         Item item = itemMapper.toItem(itemDto, user);
-        return itemMapper.toItemDto(itemRepository.save(item));
+        return itemMapper.toItemDto(itemRepository.save(item), getCommentByItem(item.getId()));
     }
 
     @Override
@@ -101,7 +101,7 @@ public class ItemServiceImpl implements ItemService {
         itemValidator.hasAccess(itemId, userId);
         User user = getUserOrThrow(userId);
         Item item = itemMapper.toItem(itemDto, user);
-        return itemMapper.toItemDto(itemRepository.save(item));
+        return itemMapper.toItemDto(itemRepository.save(item), getCommentByItem(itemId));
     }
 
     @Override
@@ -116,7 +116,7 @@ public class ItemServiceImpl implements ItemService {
                         (query, query)
                 .stream()
                 .filter(Item::getAvailable)
-                .map(itemMapper::toItemDto)
+                .map(item -> itemMapper.toItemDto(item, getCommentByItem(item.getId())))
                 .collect(Collectors.toList());
     }
 
@@ -162,6 +162,12 @@ public class ItemServiceImpl implements ItemService {
         );
 
         return itemDto;
+    }
+
+    private List<CommentDto> getCommentByItem(long itemId) {
+        return commentRepository.findAllByItemId(itemId).stream()
+                .map(commentMapper::toCommentDto)
+                .collect(Collectors.toList());
     }
 
 
