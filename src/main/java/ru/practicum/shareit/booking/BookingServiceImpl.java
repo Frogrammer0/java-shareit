@@ -107,7 +107,7 @@ public class BookingServiceImpl implements BookingService {
             default -> bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId);
         };
 
-        return List.of();
+        return bookings.stream().map(bookingMapper::toBookingResponseDto).collect(Collectors.toList());
     }
 
     private User getUserOrThrow(long userId) {

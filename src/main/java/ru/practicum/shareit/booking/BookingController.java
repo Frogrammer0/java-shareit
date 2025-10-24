@@ -57,8 +57,4 @@ public class BookingController {
         return bookingService.getBookingByUserItem(userId, State.from(stateParam));
     }
 
-
-
-
-
 }

@@ -122,6 +122,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDto postComment(long itemId, long userId, CommentDto commentDto) {
+        log.info("вызван метод postComment в ItemService");
         commentDto.setCreated(LocalDateTime.now());
         itemValidator.validateUsed(itemId, userId);
         User author = getUserOrThrow(userId);
@@ -165,6 +166,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private List<CommentDto> getCommentByItem(long itemId) {
+        log.info("вызван метод getCommentByItem в ItemService для вещи с id = {}", itemId);
         return commentRepository.findAllByItemId(itemId).stream()
                 .map(commentMapper::toCommentDto)
                 .collect(Collectors.toList());

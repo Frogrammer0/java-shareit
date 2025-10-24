@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.dto.UserShortDto;
@@ -24,7 +23,7 @@ public class ItemMapper {
                 .available(item.getAvailable())
                 .requestId(item.getRequests() != null ? item.getRequests().getId() : null)
                 .owner(new UserShortDto(item.getOwner().getId(), item.getOwner().getName()))
-                .commentDto(commentsDto)
+                .comments(commentsDto)
                 .build();
     }
 
