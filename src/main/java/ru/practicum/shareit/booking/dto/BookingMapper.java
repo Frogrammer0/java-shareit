@@ -13,6 +13,10 @@ import ru.practicum.shareit.user.dto.UserShortDto;
 public class BookingMapper {
 
     public BookingDto toBookingDto(Booking booking) {
+        if (booking == null) {
+            return null;
+        }
+
         return BookingDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())
@@ -24,6 +28,10 @@ public class BookingMapper {
     }
 
     public Booking toBooking(BookingRequestDto bookingRequestDto, Item item, User booker) {
+        if (bookingRequestDto == null) {
+            return null;
+        }
+
         return Booking.builder()
                 .id(bookingRequestDto.getId())
                 .booker(booker)
@@ -34,6 +42,10 @@ public class BookingMapper {
     }
 
     public BookingRequestDto toBookingRequestDto(Booking booking) {
+        if (booking == null) {
+            return null;
+        }
+
         return BookingRequestDto.builder()
                 .id(booking.getId())
                 .itemId(booking.getItem().getId())
@@ -43,6 +55,10 @@ public class BookingMapper {
     }
 
     public BookingResponseDto toBookingResponseDto(Booking booking) {
+        if (booking == null) {
+            return null;
+        }
+
         return BookingResponseDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())
@@ -54,6 +70,10 @@ public class BookingMapper {
     }
 
     public BookingShortDto toBookingShortDto(Booking booking) {
+        if (booking == null) {
+            return null;
+        }
+
         return BookingShortDto.builder()
                 .id(booking.getId())
                 .bookerId(booking.getBooker().getId())

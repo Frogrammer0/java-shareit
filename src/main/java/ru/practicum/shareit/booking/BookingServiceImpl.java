@@ -66,7 +66,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingResponseDto getBookingById(long userId, long bookingId) {
         log.info("получение бронирования в BookingServiceImpl");
-        bookingValidator.isBookingExists(bookingId);
         userValidator.isUserExists(userId);
         Booking booking = getBookingOrThrow(bookingId);
         bookingValidator.isBookerOrOwner(userId, booking);

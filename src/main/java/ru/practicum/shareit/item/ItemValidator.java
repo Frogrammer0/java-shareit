@@ -7,6 +7,7 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.exceptions.ForbiddenException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import java.time.LocalDateTime;
@@ -60,6 +61,14 @@ public class ItemValidator {
         if (!bookingRepository.existsByBookerIdAndItemIdAndEndBefore(userId, itemId, now)) {
             log.error("пользователь не пользовался данной вещью");
             throw new ValidationException("пользователь не пользовался данной вещью");
+        }
+    }
+
+    public void validateComment(CommentDto commentDto) {
+        log.info("проверка текста комментария");
+        if (commentDto.getText() == null || commentDto.getText().isBlank()) {
+            log.error("комментарий пуст");
+            throw new ValidationException("комментарий не должен быть пуст");
         }
     }
 
