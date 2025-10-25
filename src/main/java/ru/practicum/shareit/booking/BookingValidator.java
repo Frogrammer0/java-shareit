@@ -78,7 +78,7 @@ public class BookingValidator {
     }
 
     public void statusIsWaiting(Booking booking) {
-        if(booking.status != Status.WAITING) {
+        if (booking.status != Status.WAITING) {
             log.error("неверный статус заявки: {}", booking.getStatus());
             throw new ValidationException("неверный статус заявки");
         }
