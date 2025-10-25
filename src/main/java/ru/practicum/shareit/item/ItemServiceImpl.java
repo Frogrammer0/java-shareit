@@ -155,6 +155,7 @@ public class ItemServiceImpl implements ItemService {
         log.info("вызван метод postComment в ItemService");
         commentDto.setCreated(LocalDateTime.now());
         itemValidator.validateUsed(itemId, userId);
+        itemValidator.validateComment(commentDto);
         User author = getUserOrThrow(userId);
         Item item = getItemOrThrow(itemId);
         Comment comment = commentMapper.toComment(commentDto, item, author);

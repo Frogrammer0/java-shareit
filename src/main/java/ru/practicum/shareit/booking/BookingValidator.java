@@ -41,13 +41,6 @@ public class BookingValidator {
         }
     }
 
-    public void isBookingExists(long bookingId) {
-        if (!bookingRepository.existsById(bookingId)) {
-            log.error("бронирования с id = {} не существует", bookingId);
-            throw new ValidationException("бронирования с id = " + bookingId + " не существует");
-        }
-    }
-
 
     public void isItemAvailable(long itemId) {
         if (!itemRepository.existsByIdAndAvailableIsTrue(itemId)) {

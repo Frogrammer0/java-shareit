@@ -58,6 +58,7 @@ public class BookingServiceImpl implements BookingService {
         log.info("подтверждение бронирования в BookingServiceImpl");
         Booking booking = getBookingOrThrow(bookingId);
         bookingValidator.isOwner(ownerId, booking);
+        bookingValidator.statusIsWaiting(booking);
         userValidator.isUserExists(ownerId);
         booking.setStatus(approved ? Status.APPROVED : Status.REJECTED);
         return bookingMapper.toBookingResponseDto(bookingRepository.save(booking));
