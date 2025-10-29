@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.dto.UserShortDto;
+
+import java.util.List;
 
 
 @Component
@@ -11,15 +14,16 @@ import ru.practicum.shareit.user.User;
 public class ItemMapper {
 
 
-    public ItemDto toItemDto(Item item) {
+    public ItemDto toItemDto(Item item, List<CommentDto> commentsDto) {
 
         return ItemDto.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
-                .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
-                .ownerId(item.getOwner().getId())
+                .requestId(item.getRequests() != null ? item.getRequests().getId() : null)
+                .owner(new UserShortDto(item.getOwner().getId(), item.getOwner().getName()))
+                .comments(commentsDto)
                 .build();
     }
 
@@ -30,6 +34,13 @@ public class ItemMapper {
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
                 .owner(user)
+                .build();
+    }
+
+    public ItemShortDto toItemShortDto(Item item) {
+        return ItemShortDto.builder()
+                .id(item.getId())
+                .name(item.getName())
                 .build();
     }
 }
