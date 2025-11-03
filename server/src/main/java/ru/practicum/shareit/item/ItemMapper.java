@@ -1,10 +1,13 @@
 package ru.practicum.shareit.item;
 
+import item.CommentDto;
+import item.ItemDto;
+import item.ItemShortDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.dto.UserShortDto;
+import user.dto.UserShortDto;
 
 import java.util.List;
 

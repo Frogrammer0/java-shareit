@@ -1,5 +1,7 @@
 package ru.practicum.shareit.item;
 
+import item.CommentDto;
+import item.ItemShortDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Comment;

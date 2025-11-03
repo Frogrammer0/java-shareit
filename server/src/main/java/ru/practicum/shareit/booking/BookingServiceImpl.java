@@ -8,7 +8,6 @@ import exceptions.NotFoundException;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
@@ -61,8 +60,9 @@ public class BookingServiceImpl implements BookingService {
                     now, from, size);
             case PAST -> bookingRepository.findPastByBookerId(userId, now, from, size);
             case FUTURE -> bookingRepository.findFutureByBookerId(userId, now, from, size);
-            case WAITING -> bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.WAITING);
-            case REJECTED -> bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
+            ///
+            case WAITING -> bookingRepository.findStatusByBookerId(userId, Status.WAITING, from, size);
+            case REJECTED -> bookingRepository.findStatusByBookerId(userId, Status.REJECTED, from, size);
             default -> bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
         };
 
@@ -94,8 +94,6 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.toBookingResponseDto(bookingRepository.save(booking));
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public List<BookingResponseDto> getBookingByUserItem(long userId, BookingState state, Integer from, Integer size) {
         log.info("получение бронирований по вещам пользователя");
@@ -104,15 +102,15 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookings = switch (state) {
             case CURRENT -> bookingRepository.findCurrentByOwnerItem(userId, now, now, from, size);
             case PAST -> bookingRepository.findPastByOwnerItem(userId, now, from, size);
-            /// 
-            case FUTURE -> bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(userId, now);
-            case WAITING -> bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.WAITING);
-            case REJECTED -> bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
-            default -> bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId);
+            case FUTURE -> bookingRepository.findFutureByOwnerItem(userId, now, from, size);
+            case WAITING -> bookingRepository.findStatusByOwnerItem(userId, Status.WAITING, from, size);
+            case REJECTED -> bookingRepository.findStatusByOwnerItem(userId, Status.REJECTED, from, size);
+            default -> bookingRepository.findAllByOwner(userId, from, size);
         };
-
         return bookings.stream().map(bookingMapper::toBookingResponseDto).collect(Collectors.toList());
     }
+
+
 
     private User getUserOrThrow(long userId) {
         log.info("вызван метод getUserOrThrow в BookingService для id = {}", userId);

@@ -1,74 +1,91 @@
 package ru.practicum.shareit.item;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
 import item.CommentDto;
 import item.ItemDto;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
+@Controller
+@RequestMapping(path = "/items")
+@RequiredArgsConstructor
 @Slf4j
-@RestController
-@RequestMapping("/items")
+@Validated
 public class ItemController {
-
-    private final ItemService itemService;
-
-    public ItemController(ItemService itemService) {
-        this.itemService = itemService;
-    }
+    private final ItemClient itemClient;
 
     @GetMapping
-    public List<ItemDto> getAllItemsByUser(@RequestHeader("X-Sharer-User-Id") long userId) {
-        return itemService.getAllItemsByUser(userId);
+    public ResponseEntity<Object> getAllItemsByUser(
+            @RequestHeader("X-Sharer-User-Id") long userId,
+            @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
+            @Positive @RequestParam(name = "size", defaultValue = "10") Integer size
+    ) {
+        log.info("Get items with userId={}, from={}, size={}", userId, from, size);
+        return itemClient.getItemsByUser(userId, from, size);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(
-            @RequestHeader("X-Sharer-User-Id") long userId,
-            @PathVariable long itemId
+    public ResponseEntity<Object> getItemById(
+            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @PathVariable Long itemId
     ) {
-        return itemService.getItemById(itemId);
+        log.info("Get item with userId={}, itemId={}", userId, itemId);
+        return itemClient.getItemById(itemId, userId);
     }
 
     @PostMapping
-    public ItemDto create(
-            @RequestHeader("X-Sharer-User-Id") long userId,
-            @RequestBody ItemDto itemDto) {
-        return itemService.create(itemDto, userId);
+    public ResponseEntity<Object> create(
+            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestBody @Valid ItemDto itemDto
+    ) {
+        log.info("Creating item with userId={}, item={}", userId, itemDto);
+        return itemClient.create(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto edit(
-            @PathVariable long itemId,
-            @RequestHeader("X-Sharer-User-Id") long userId,
-            @RequestBody ItemDto itemDto
+    public ResponseEntity<Object> edit(
+            @PathVariable Long itemId,
+            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestBody @Valid ItemDto itemDto
     ) {
-        return itemService.edit(itemDto, userId, itemId);
+        log.info("Edit item with userId={}, item={}", userId, itemDto);
+        return itemClient.edit(itemId, userId, itemDto);
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(
+    @DeleteMapping("/{itemId}")
+    public ResponseEntity<Object> delete(
             @PathVariable long itemId,
-            @RequestHeader("X-Sharer-User-Id") long userId
+            @RequestHeader("X-Sharer-User-Id") Long userId
     ) {
-        itemService.delete(itemId, userId);
+        log.info("Delete item with userId={}, item={}", userId, itemId);
+        return itemClient.delete(itemId, userId);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItem(
-            @RequestParam String text
+    public ResponseEntity<Object> searchItem(
+            @RequestParam String text,
+            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
+            @Positive @RequestParam(name = "size", defaultValue = "10") Integer size
+
     ) {
-        return itemService.search(text);
+        log.info("Search item with userId={}, text={}", userId, text);
+        return itemClient.search(text, userId, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto postComment(
+    public ResponseEntity<Object> postComment(
             @PathVariable long itemId,
             @RequestHeader("X-Sharer-User-Id") long userId,
-            @RequestBody CommentDto commentDto
+            @RequestBody @Valid CommentDto commentDto
     ) {
-        return itemService.postComment(itemId, userId, commentDto);
+        log.info("Post comment with itemId = {}, userId={}, comment={}", itemId, userId, commentDto.getText());
+        return itemClient.postComment(itemId, userId, commentDto);
     }
-
 }

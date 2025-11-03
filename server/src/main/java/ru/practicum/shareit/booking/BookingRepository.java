@@ -19,7 +19,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             select * from bookings b
             where b.booker_id = :bookerId
             and b.started < :now1 and b.ended > :now2
-            order by b.start desc
+            order by b.started desc
             limit :size offset :from
             """, nativeQuery = true)
     List<Booking> findCurrentByBookerId(@Param("bookerId") long bookerId,
@@ -33,7 +33,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             select * from bookings b
             where b.booker_id = :bookerId
             and b.ended < now
-            order by b.start desc
+            order by b.started desc
             limit :size offset :from
             """, nativeQuery = true)
     List<Booking> findPastByBookerId(@Param("bookerId") long bookerId,
@@ -46,7 +46,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             select * from bookings b
             where b.booker_id = :bookerId
             and b.started > :now
-            order by b.start desc
+            order by b.started desc
             limit :size offset :from
             """, nativeQuery = true)
     List<Booking> findFutureByBookerId(@Param("bookerId") long bookerId,
@@ -55,10 +55,29 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                        @Param("size") int size);
 
     //STATUS
-    List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(long bookerId, Status status);
+    @Query(value = """
+            select * from booking b
+            where b.booker_id = :bookerId
+            and b.status = :status
+            order by b.started desc
+            limit :size offset :from
+            """)
+    List<Booking> findStatusByBookerId(@Param("bookerId") long bookerId,
+                                       @Param("status") Status status,
+                                       @Param("size") int size,
+                                       @Param("from") int from);
 
     //ALL BY OWNER
-    List<Booking> findAllByItemOwnerIdOrderByStartDesc(long ownerId);
+    @Query(value = """
+            select * from booking b
+            join items i on b.item_id = i.id
+            where i.user_id = :ownerId
+            order by b.started desc
+            limit :size offset :from
+            """)
+    List<Booking> findAllByOwner(@Param("ownerId") long ownerId,
+                                 @Param("from") int from,
+                                 @Param("size") int size);
 
     //CURRENT BY OWNER
     @Query(value = """
@@ -67,7 +86,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             where i.user_id = :ownerId
             and b.started < :now1
             and b.ended > :now2
-            order by b.start desc
+            order by b.started desc
             limit :size offset :from
             """, nativeQuery = true)
     List<Booking> findCurrentByOwnerItem(@Param("ownerId") long ownerId,
@@ -82,7 +101,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             join items i on b.item_id = i.id
             where i.user_id = :ownerId
             and b.ended < :now1
-            order by b.start desc
+            order by b.started desc
             limit :size offset :from
             """, nativeQuery = true)
     List<Booking> findPastByOwnerItem(@Param("ownerId") long ownerId,
@@ -90,11 +109,33 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                       @Param("from") int from,
                                       @Param("size") int size);
 
-    //FUTURE OWNER
-    List<Booking> findAllByItemOwnerIdAndStartAfterOrderByStartDesc(long bookerId, LocalDateTime now);
+    //FUTURE BY OWNER
+    @Query(value = """
+            select * from booking b
+            join items i on b.item_id = i.id
+            where i.user_id = :ownerId
+            and b.started > :now
+            order by b.started desc
+            limit :size offset :from
+            """)
+    List<Booking> findFutureByOwnerItem(@Param("ownerId") long ownerId,
+                                        @Param("now") LocalDateTime now,
+                                        @Param("from") int from,
+                                        @Param("size") int size);
 
-    //STATUS OWNER
-    List<Booking> findAllByItemOwnerIdAndStatusOrderByStartDesc(long bookerId, Status status);
+    //STATUS BY OWNER
+    @Query(value = """
+            select * from booking b
+            join items i on b.item_id = i.id
+            where i.user_id = :ownerId
+            and b.status = :status
+            order by b.started desc
+            limit :size offset :from
+            """)
+    List<Booking> findStatusByOwnerItem(@Param("ownerId") long ownerId,
+                                        @Param("status") Status status,
+                                        @Param("from") int from,
+                                        @Param("size") int size);
 
     //LAST BOOKING
     Optional<Booking> findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(

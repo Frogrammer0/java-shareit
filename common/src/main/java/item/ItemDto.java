@@ -1,10 +1,10 @@
 package item;
 
+import booking.dto.BookingShortDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.booking.dto.BookingShortDto;
-import ru.practicum.shareit.user.dto.UserShortDto;
+import user.dto.UserShortDto;
 
 import java.util.List;
 
