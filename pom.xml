@@ -23,7 +23,8 @@
 	<modules>
 		<module>gateway</module>
 		<module>server</module>
-	</modules>
+        <module>common</module>
+    </modules>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
