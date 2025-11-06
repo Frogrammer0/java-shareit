@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import java.util.List;
 
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Data
 public class ItemDto {
