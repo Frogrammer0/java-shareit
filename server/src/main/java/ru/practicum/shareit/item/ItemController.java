@@ -1,7 +1,5 @@
 package ru.practicum.shareit.item;
 
-import item.CommentDto;
-import item.ItemDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +17,11 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getAllItemsByUser(@RequestHeader("X-Sharer-User-Id") long userId) {
-        return itemService.getAllItemsByUser(userId);
+    public List<ItemDto> getAllItemsByUser(
+            @RequestHeader("X-Sharer-User-Id") long userId,
+            @RequestParam int from,
+            @RequestParam int size) {
+        return itemService.getAllItemsByUser(userId, from, size);
     }
 
     @GetMapping("/{itemId}")
@@ -58,9 +59,11 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> searchItem(
             @RequestParam String text,
-            @RequestHeader("X-Sharer-User-Id") long userId
+            @RequestHeader("X-Sharer-User-Id") long userId,
+            @RequestParam int from,
+            @RequestParam int size
     ) {
-        return itemService.search(text);
+        return itemService.search(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

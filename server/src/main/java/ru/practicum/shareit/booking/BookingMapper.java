@@ -1,17 +1,19 @@
 package ru.practicum.shareit.booking;
 
-import booking.dto.BookingDto;
-import booking.dto.BookingRequestDto;
-import booking.dto.BookingResponseDto;
-import booking.dto.BookingShortDto;
-import item.ItemShortDto;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingRequestDto;
+import ru.practicum.shareit.booking.dto.BookingResponseDto;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
+import ru.practicum.shareit.item.ItemShortDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
-import user.dto.UserShortDto;
+import ru.practicum.shareit.user.UserShortDto;
 
 
+@Slf4j
 @RequiredArgsConstructor()
 @Component
 public class BookingMapper {
@@ -62,13 +64,15 @@ public class BookingMapper {
         if (booking == null) {
             return null;
         }
-
         return BookingResponseDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())
                 .end(booking.getEnd())
                 .status(booking.getStatus())
-                .item(new ItemShortDto(booking.getItem().getId(), booking.getItem().getName()))
+                .item(new ItemShortDto(booking.getItem().getId(),
+                        booking.getItem().getName(),
+                        booking.getItem().getRequest() != null ? booking.getItem().getRequest().getId() : null,
+                        booking.getItem().getOwner().getId()))
                 .booker(new UserShortDto(booking.getBooker().getId(),booking.getBooker().getName()))
                 .build();
     }

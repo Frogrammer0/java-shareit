@@ -1,10 +1,8 @@
 package ru.practicum.shareit.booking;
 
-import booking.BookingState;
-import booking.Status;
-import booking.dto.BookingRequestDto;
-import booking.dto.BookingResponseDto;
-import exceptions.NotFoundException;
+import ru.practicum.shareit.booking.dto.BookingRequestDto;
+import ru.practicum.shareit.booking.dto.BookingResponseDto;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +58,6 @@ public class BookingServiceImpl implements BookingService {
                     now, from, size);
             case PAST -> bookingRepository.findPastByBookerId(userId, now, from, size);
             case FUTURE -> bookingRepository.findFutureByBookerId(userId, now, from, size);
-            ///
             case WAITING -> bookingRepository.findStatusByBookerId(userId, Status.WAITING, from, size);
             case REJECTED -> bookingRepository.findStatusByBookerId(userId, Status.REJECTED, from, size);
             default -> bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
@@ -73,7 +70,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponseDto create(BookingRequestDto bookingRequestDto, long userId) {
-        log.info("создание бронирования в BookingServiceImpl");
+        log.info("создание бронирования в BookingServiceImpl для {}, userId = {}", bookingRequestDto, userId);
         User user = getUserOrThrow(userId);
         Item item = getItemOrThrow(bookingRequestDto.getItemId());
         bookingValidator.validateDate(bookingRequestDto);

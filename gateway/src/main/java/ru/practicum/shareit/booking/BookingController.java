@@ -1,7 +1,7 @@
 package ru.practicum.shareit.booking;
 
-import booking.BookingState;
-import booking.dto.BookingRequestDto;
+import ru.practicum.shareit.booking.dto.BookingRequestDto;
+import ru.practicum.shareit.exceptions.ValidationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -36,7 +36,7 @@ public class BookingController {
             @Positive @RequestParam(name = "size", defaultValue = "10") Integer size
     ) {
         BookingState state = BookingState.from(stateParam)
-                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
+                .orElseThrow(() -> new ValidationException("Unknown state: " + stateParam));
         log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, userId, from, size);
         return bookingClient.getBookings(userId, state, from, size);
     }
@@ -66,7 +66,7 @@ public class BookingController {
             @Positive @RequestParam(name = "size", defaultValue = "10") Integer size
     ) {
         BookingState state = BookingState.from(stateParam)
-                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
+                .orElseThrow(() -> new ValidationException("Unknown state: " + stateParam));
         log.info("Get booking by user item with state {}, userId={}, from={}, size={}", stateParam, userId, from, size);
         return bookingClient.getBookingsByUserItem(userId, state, from, size);
     }

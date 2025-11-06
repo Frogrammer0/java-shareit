@@ -1,11 +1,10 @@
 package ru.practicum.shareit.booking;
 
 
-import booking.Status;
-import booking.dto.BookingRequestDto;
-import exceptions.ForbiddenException;
-import exceptions.NotFoundException;
-import exceptions.ValidationException;
+import ru.practicum.shareit.booking.dto.BookingRequestDto;
+import ru.practicum.shareit.exceptions.ForbiddenException;
+import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,7 +28,7 @@ public class BookingValidator {
     }
 
     public void validateDate(BookingRequestDto bookingRequestDto) {
-
+        log.info("валидация даты бронирования");
         if (bookingRequestDto.getStart() == null || bookingRequestDto.getEnd() == null) {
             throw new ValidationException("Дата начала и окончания бронирования не могут быть пустыми");
         }
@@ -46,6 +45,7 @@ public class BookingValidator {
 
 
     public void isItemAvailable(long itemId) {
+        log.info("валидация доступности вещи");
         if (!itemRepository.existsByIdAndAvailableIsTrue(itemId)) {
             log.error("вещь с id = {} недоступна", itemId);
             throw new ValidationException("вещь с id = " + itemId + "  недоступна");
@@ -53,6 +53,7 @@ public class BookingValidator {
     }
 
     public void isBookerOrOwner(long userId, Booking booking) {
+        log.info("проверка прав доступа пользователя");
         if (!(booking.booker.getId() == userId || booking.item.getOwner().getId() == userId)) {
             log.error("отсутствие доступа у пользователя с id = {} ", userId);
             throw new ForbiddenException("отсутствие доступа у пользователя с id = " + userId);
@@ -60,6 +61,7 @@ public class BookingValidator {
     }
 
     public void isOwner(long userId, Booking booking) {
+        log.info("проверка прав доступа пользователя");
         if (booking.item.getOwner().getId() != userId) {
             log.error("не является владельцем пользователь с id = {} ", userId);
             throw new ForbiddenException("отсутствие доступа у пользователя с id = " + userId);
@@ -67,6 +69,7 @@ public class BookingValidator {
     }
 
     public void hasItem(long userId) {
+        log.info("проверка наличия вещей у пользователя");
         if (!itemRepository.existsByOwnerId(userId)) {
             log.error("отсутствие вещей у пользователя с id = {} ", userId);
             throw new NotFoundException("отсутствие вещей у пользователя с id = " + userId);

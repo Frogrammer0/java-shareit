@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking;
 
-import booking.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,7 +31,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query(value = """
             select * from bookings b
             where b.booker_id = :bookerId
-            and b.ended < now
+            and b.ended < :now
             order by b.started desc
             limit :size offset :from
             """, nativeQuery = true)
@@ -61,7 +60,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             and b.status = :status
             order by b.started desc
             limit :size offset :from
-            """)
+            """, nativeQuery = true)
     List<Booking> findStatusByBookerId(@Param("bookerId") long bookerId,
                                        @Param("status") Status status,
                                        @Param("size") int size,
@@ -74,7 +73,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             where i.user_id = :ownerId
             order by b.started desc
             limit :size offset :from
-            """)
+            """, nativeQuery = true)
     List<Booking> findAllByOwner(@Param("ownerId") long ownerId,
                                  @Param("from") int from,
                                  @Param("size") int size);
@@ -117,7 +116,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             and b.started > :now
             order by b.started desc
             limit :size offset :from
-            """)
+            """, nativeQuery = true)
     List<Booking> findFutureByOwnerItem(@Param("ownerId") long ownerId,
                                         @Param("now") LocalDateTime now,
                                         @Param("from") int from,
@@ -131,7 +130,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             and b.status = :status
             order by b.started desc
             limit :size offset :from
-            """)
+            """, nativeQuery = true)
     List<Booking> findStatusByOwnerItem(@Param("ownerId") long ownerId,
                                         @Param("status") Status status,
                                         @Param("from") int from,
@@ -151,6 +150,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     boolean existsByBookerIdAndItemIdAndEndBefore(
             long bookerId, long itemId, LocalDateTime now
     );
+
+
 
     //ALL BOOKINGS FOR ITEMS
     List<Booking> findAllByItemIdInAndStatusOrderByStartAsc(List<Long> itemId, Status status);

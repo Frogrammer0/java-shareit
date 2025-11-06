@@ -1,7 +1,5 @@
 package ru.practicum.shareit.item;
 
-import item.CommentDto;
-import item.ItemDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;

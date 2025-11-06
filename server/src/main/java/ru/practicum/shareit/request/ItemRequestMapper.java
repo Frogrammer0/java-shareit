@@ -1,32 +1,35 @@
 package ru.practicum.shareit.request;
 
+import ru.practicum.shareit.item.ItemShortDto;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.user.InMemoryUserStorage;
+import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserShortDto;
+
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Component
 public class ItemRequestMapper {
-    static InMemoryUserStorage userStorage;
 
-    public ItemRequestDto toItemRequestDto(ItemRequest itemRequest) {
+
+    public ItemRequestDto toItemRequestDto(ItemRequest itemRequest, List<ItemShortDto> items) {
+
         return ItemRequestDto.builder()
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
-                .requestorId(itemRequest.getRequestor().getId())
+                .requestor(new UserShortDto(itemRequest.getRequestor().getId(), itemRequest.getRequestor().getName()))
                 .created(itemRequest.getCreated())
+                .items(items)
                 .build();
     }
 
-    public ItemRequest toItemRequest(ItemRequestDto itemRequestDto) {
+    public ItemRequest toItemRequest(ItemRequestDto itemRequestDto, User user) {
         return ItemRequest.builder()
                 .id(itemRequestDto.getId())
                 .description(itemRequestDto.getDescription())
-                .requestor(userStorage.getUserById(itemRequestDto.getRequestorId()).orElseThrow(
-                        () -> new NotFoundException("пользователь не найден")
-                ))
+                .requestor(user)
                 .created(itemRequestDto.getCreated())
                 .build();
     }

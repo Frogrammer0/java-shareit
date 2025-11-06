@@ -1,10 +1,8 @@
 package ru.practicum.shareit.item;
 
-import booking.Status;
-import booking.dto.BookingShortDto;
-import exceptions.NotFoundException;
-import item.CommentDto;
-import item.ItemDto;
+import ru.practicum.shareit.booking.Status;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,8 @@ import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.InMemoryRequestStorage;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserValidator;
@@ -38,14 +37,15 @@ public class ItemServiceImpl implements ItemService {
     CommentMapper commentMapper;
     ItemValidator itemValidator;
     UserValidator userValidator;
+    ItemRequestRepository requestRepository;
 
 
     @Autowired
-    public ItemServiceImpl(ItemRepository itemRepository, UserRepository userRepository,
-                           ItemMapper itemMapper, ItemValidator itemValidator, CommentRepository commentRepository,
+    public ItemServiceImpl(ItemRepository itemRepository, UserRepository userRepository, ItemMapper itemMapper,
+                           ItemValidator itemValidator, CommentRepository commentRepository,
                            UserValidator userValidator, BookingRepository bookingRepository,
-                           CommentMapper commentMapper, InMemoryRequestStorage requestStorage,
-                           BookingMapper bookingMapper) {
+                           CommentMapper commentMapper, BookingMapper bookingMapper,
+                           ItemRequestRepository requestRepository) {
         this.itemMapper = itemMapper;
         this.itemValidator = itemValidator;
         this.userValidator = userValidator;
@@ -55,17 +55,17 @@ public class ItemServiceImpl implements ItemService {
         this.bookingMapper = bookingMapper;
         this.commentRepository = commentRepository;
         this.commentMapper = commentMapper;
-
+        this.requestRepository = requestRepository;
     }
 
 
     @Override
-    public List<ItemDto> getAllItemsByUser(long userId) {
+    public List<ItemDto> getAllItemsByUser(long userId, Integer from, Integer size) {
         log.info("вызван метод getAllItemsByUser в ItemService");
         userValidator.isUserExists(userId);
         LocalDateTime now = LocalDateTime.now();
 
-        List<Item> items = itemRepository.findAllByOwnerId(userId);
+        List<Item> items = itemRepository.findAllByOwnerId(userId, from, size);
 
         List<Long> itemsId = items.stream().map(Item::getId).toList();
 
@@ -99,6 +99,10 @@ public class ItemServiceImpl implements ItemService {
         itemValidator.validate(itemDto);
         User user = getUserOrThrow(userId);
         Item item = itemMapper.toItem(itemDto, user);
+        if (itemDto.getRequestId() != null) {
+            ItemRequest request = getRequestOrThrow(itemDto.getRequestId());
+            item.setRequest(request);
+        }
         return itemMapper.toItemDto(itemRepository.save(item), getCommentByItem(item.getId()));
     }
 
@@ -118,20 +122,23 @@ public class ItemServiceImpl implements ItemService {
         itemValidator.hasAccess(itemId, userId);
         User user = getUserOrThrow(userId);
         Item item = itemMapper.toItem(itemDto, user);
+
+        if (itemDto.getRequestId() != null) {
+            ItemRequest request = getRequestOrThrow(itemDto.getRequestId());
+            item.setRequest(request);
+        }
         return itemMapper.toItemDto(itemRepository.save(item), getCommentByItem(itemId));
     }
 
     @Override
-    public List<ItemDto> search(String query) {
+    public List<ItemDto> search(String query, int from, int size) {
         log.info("вызван метод search в ItemService");
 
         if (query.isBlank()) {
             return List.of();
         }
 
-        List<Item> items = itemRepository.findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(
-                query, query
-        );
+        List<Item> items = itemRepository.searchAvailableItems(query, from, size);
 
         List<Long> itemsId = items.stream().map(Item::getId).toList();
 
@@ -139,11 +146,8 @@ public class ItemServiceImpl implements ItemService {
                 .map(commentMapper::toCommentDto)
                 .collect(Collectors.groupingBy(c -> c.getItem().getId()));
 
-        return itemRepository.findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(
-                        query, query
-                )
+        return items
                 .stream()
-                .filter(Item::getAvailable)
                 .map(item -> itemMapper.toItemDto(item, commentsByItem.get(item.getId())))
                 .collect(Collectors.toList());
     }
@@ -151,6 +155,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public CommentDto postComment(long itemId, long userId, CommentDto commentDto) {
         log.info("вызван метод postComment в ItemService");
+        List<Booking> booking = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
         commentDto.setCreated(LocalDateTime.now());
         itemValidator.validateUsed(itemId, userId);
         itemValidator.validateComment(commentDto);
@@ -207,6 +212,13 @@ public class ItemServiceImpl implements ItemService {
         return commentRepository.findAllByItemId(itemId).stream()
                 .map(commentMapper::toCommentDto)
                 .collect(Collectors.toList());
+    }
+
+    private ItemRequest getRequestOrThrow(long requestId) {
+        log.info("вызван метод getRequestOrThrow в ItemService для запроса с id = {}", requestId);
+        return requestRepository.findById(requestId).orElseThrow(
+                () -> new NotFoundException("Запрос c id " + requestId + " не найден")
+        );
     }
 
 

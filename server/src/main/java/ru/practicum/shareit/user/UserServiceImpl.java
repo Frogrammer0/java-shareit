@@ -1,10 +1,9 @@
 package ru.practicum.shareit.user;
 
-import exceptions.NotFoundException;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import user.dto.UserDto;
 
 
 import java.util.List;
@@ -25,9 +24,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getAllUsers() {
+    public List<UserDto> getAllUsers(int from, int size) {
         log.info("получение всех пользователей в UserService");
-        return userRepository.findAll().stream()
+        return userRepository.findAll(from, size).stream()
                 .map(userMapper::toUserDto)
                 .collect(Collectors.toList());
     }
@@ -40,7 +39,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto create(UserDto userDto) {
-        log.info("создание пользователя в UserService");
+        log.info("создание пользователя в UserService {}", userDto);
         userValidator.validate(userDto);
         userValidator.isMailExists(userDto.getEmail());
         User user = userMapper.toUser(userDto);
@@ -52,9 +51,16 @@ public class UserServiceImpl implements UserService {
     public UserDto edit(long userId, UserDto userDto) {
         log.info("редактирование пользователя в UserService");
         userValidator.isUserExists(userId);
-        userValidator.isMailExists(userDto.getEmail());
-        User user = userMapper.toUser(userDto);
-        user.setId(userId);
+        userValidator.validateEmailForOwner(userDto.getEmail(), userId);
+
+        User user = getUserOrThrow(userId);
+        if (userDto.getName() != null) {
+            user.setName(userDto.getName());
+        }
+
+        if (userDto.getEmail() != null) {
+            user.setEmail(userDto.getEmail());
+        }
         return userMapper.toUserDto(userRepository.save(user));
     }
 

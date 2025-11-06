@@ -1,14 +1,12 @@
 package ru.practicum.shareit.item;
 
+import ru.practicum.shareit.exceptions.ForbiddenException;
+import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.exceptions.ForbiddenException;
-import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.ValidationException;
-import item.CommentDto;
-import item.ItemDto;
 
 import java.time.LocalDateTime;
 
@@ -57,7 +55,7 @@ public class ItemValidator {
 
     public void validateUsed(long itemId, long userId) {
         LocalDateTime now = LocalDateTime.now();
-        log.info("проверка возможности оставлять комментарий");
+        log.info("проверка возможности оставлять комментарий for userId = {}, itemId = {}", userId, itemId);
         if (!bookingRepository.existsByBookerIdAndItemIdAndEndBefore(userId, itemId, now)) {
             log.error("пользователь не пользовался данной вещью");
             throw new ValidationException("пользователь не пользовался данной вещью");

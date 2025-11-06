@@ -1,7 +1,5 @@
 package ru.practicum.shareit.item;
 
-import item.CommentDto;
-import item.ItemShortDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Comment;
@@ -26,7 +24,11 @@ public class CommentMapper {
         return CommentDto.builder()
                 .id(comment.getId())
                 .authorName(comment.getAuthor().getName())
-                .item(new ItemShortDto(comment.getItem().getId(), comment.getItem().getName()))
+                .item(new ItemShortDto(
+                        comment.getItem().getId(),
+                        comment.getItem().getName(),
+                        comment.getItem().getRequest() != null ? comment.getItem().getRequest().getId() : null,
+                        comment.getAuthor().getId()))
                 .text(comment.getText())
                 .created(comment.getCreated())
                 .build();

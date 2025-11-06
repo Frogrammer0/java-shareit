@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking;
 
-import booking.Status;
 import jakarta.persistence.*;
 import lombok.*;
 import ru.practicum.shareit.item.model.Item;

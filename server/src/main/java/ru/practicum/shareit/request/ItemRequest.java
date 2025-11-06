@@ -4,11 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import ru.practicum.shareit.user.User;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-item-requests.
- */
 
 @Builder
 @Getter
@@ -16,6 +13,8 @@ import java.time.LocalDate;
 @ToString
 @Entity
 @Table(name = "requests", schema = "public")
+@AllArgsConstructor
+@NoArgsConstructor
 public class ItemRequest {
 
     @Id
@@ -30,5 +29,7 @@ public class ItemRequest {
     User requestor;
 
     @Column
-    LocalDate created;
+    LocalDateTime created;
+
+
 }

@@ -36,6 +36,6 @@ public class Item {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "request_id")
-    ItemRequest requests;
+    ItemRequest request;
 
 }

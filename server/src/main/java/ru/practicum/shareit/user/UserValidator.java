@@ -1,13 +1,13 @@
 package ru.practicum.shareit.user;
 
-import exceptions.DuplicatedDataException;
-import exceptions.NotFoundException;
-import exceptions.ValidationException;
+import ru.practicum.shareit.exceptions.DuplicatedDataException;
+import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import user.dto.UserDto;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -60,5 +60,13 @@ public class UserValidator {
         }
     }
 
+    public void validateEmailForOwner(String email, long userId) {
+
+            Optional<User> userOpt = userRepository.findByEmail(email);
+            if (userOpt.isPresent() && userOpt.get().getId() != userId) {
+                log.error("Имейл {} уже используется другим пользователем id={}", email, userOpt.get().getId());
+                throw new DuplicatedDataException("Этот имейл уже используется");
+            }
+        }
 
 }
