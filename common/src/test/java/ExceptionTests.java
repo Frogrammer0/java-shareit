@@ -7,7 +7,7 @@ import ru.practicum.shareit.exceptions.ValidationException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ExceptionTest {
+class ExceptionTests {
 
     @Test
     void testMessageDuplicatedData() {
