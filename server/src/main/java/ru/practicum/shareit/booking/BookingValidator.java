@@ -19,12 +19,10 @@ import java.time.LocalDateTime;
 public class BookingValidator {
 
     private final ItemRepository itemRepository;
-    private final BookingRepository bookingRepository;
 
     @Autowired
     public BookingValidator(ItemRepository itemRepository, BookingRepository bookingRepository) {
         this.itemRepository = itemRepository;
-        this.bookingRepository = bookingRepository;
     }
 
     public void validateDate(BookingRequestDto bookingRequestDto) {

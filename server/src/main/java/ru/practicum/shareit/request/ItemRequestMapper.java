@@ -9,7 +9,7 @@ import ru.practicum.shareit.user.UserShortDto;
 
 import java.util.List;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 @Component
 public class ItemRequestMapper {
 
