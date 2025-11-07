@@ -12,7 +12,7 @@ import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(classes = ShareItTestApplication.class)
 @ActiveProfiles("test")
 class ShareItServerTest {
 
