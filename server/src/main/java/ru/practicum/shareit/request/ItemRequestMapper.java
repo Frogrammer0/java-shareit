@@ -1,7 +1,6 @@
 package ru.practicum.shareit.request;
 
 import ru.practicum.shareit.item.ItemShortDto;
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.user.User;

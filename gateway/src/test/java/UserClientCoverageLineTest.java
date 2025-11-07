@@ -1,8 +1,10 @@
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import ru.practicum.shareit.user.UserClient;
 import ru.practicum.shareit.user.UserDto;
 
+@Slf4j
 class UserClientCoverageLineTest {
 
     @Test
@@ -18,12 +20,32 @@ class UserClientCoverageLineTest {
     }
 
     private void callAllMethodsSafely(UserClient client) {
-        try { client.getAllUsers(1L, 0, 10); } catch (Exception e) {}
-        try { client.getAllUsers(1L, null, null); } catch (Exception e) {}
-        try { client.getAllUsers(1L, 0, null); } catch (Exception e) {}
-        try { client.getAllUsers(1L, null, 10); } catch (Exception e) {}
+        try {
+            client.getAllUsers(1L, 0, 10);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        try {
+            client.getAllUsers(1L, null, null);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        try {
+            client.getAllUsers(1L, 0, null);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        try {
+            client.getAllUsers(1L, null, 10);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
 
-        try { client.getUserById(123L); } catch (Exception e) {}
+        try {
+            client.getUserById(123L);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
 
         try {
             UserDto userDto = UserDto.builder()
@@ -32,7 +54,9 @@ class UserClientCoverageLineTest {
                     .email("test@example.com")
                     .build();
             client.create(userDto);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
 
         try {
             UserDto userDto = UserDto.builder()
@@ -41,8 +65,14 @@ class UserClientCoverageLineTest {
                     .email("updated@example.com")
                     .build();
             client.edit(123L, userDto);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
 
-        try { client.delete(123L); } catch (Exception e) {}
+        try {
+            client.delete(123L);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
     }
 }

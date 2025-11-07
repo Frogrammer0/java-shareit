@@ -1,3 +1,4 @@
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import ru.practicum.shareit.booking.BookingClient;
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@Slf4j
 class BookingClientCoverageLineTest {
 
     @Test
@@ -28,6 +30,7 @@ class BookingClientCoverageLineTest {
         try {
             client.getBookings(1L, BookingState.ALL, 0, 10);
         } catch (NullPointerException e) {
+            log.error(e.getMessage());
         }
     }
 
@@ -44,12 +47,36 @@ class BookingClientCoverageLineTest {
     }
 
     private void callAllMethodsSafely(BookingClient client) {
-        try { client.getBookings(1L, BookingState.ALL, 0, 10); } catch (Exception e) {}
-        try { client.getBookings(1L, BookingState.CURRENT, null, null); } catch (Exception e) {}
-        try { client.getBookings(1L, BookingState.PAST, 0, 10); } catch (Exception e) {}
-        try { client.getBookings(1L, BookingState.FUTURE, 0, 10); } catch (Exception e) {}
-        try { client.getBookings(1L, BookingState.WAITING, 0, 10); } catch (Exception e) {}
-        try { client.getBookings(1L, BookingState.REJECTED, 0, 10); } catch (Exception e) {}
+        try {
+            client.getBookings(1L, BookingState.ALL, 0, 10);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        try {
+            client.getBookings(1L, BookingState.CURRENT, null, null);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        try {
+            client.getBookings(1L, BookingState.PAST, 0, 10);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        try {
+            client.getBookings(1L, BookingState.FUTURE, 0, 10);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        try {
+            client.getBookings(1L, BookingState.WAITING, 0, 10);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        try {
+            client.getBookings(1L, BookingState.REJECTED, 0, 10);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
 
         try {
             BookingRequestDto dto = new BookingRequestDto();
@@ -57,17 +84,38 @@ class BookingClientCoverageLineTest {
             dto.setStart(LocalDateTime.now().plusDays(1));
             dto.setEnd(LocalDateTime.now().plusDays(2));
             client.bookItem(1L, dto);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
 
-        try { client.getBooking(1L, 123L); } catch (Exception e) {}
+        try {
+            client.getBooking(1L, 123L);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
 
-        try { client.approvedBooking(123L, 1L, true); } catch (Exception e) {}
-        try { client.approvedBooking(123L, 1L, false); } catch (Exception e) {}
+        try {
+            client.approvedBooking(123L, 1L, true);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        try {
+            client.approvedBooking(123L, 1L, false);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
 
-        try { client.getBookingsByUserItem(1L, BookingState.ALL, 0, 10); } catch (Exception e) {}
-        try { client.getBookingsByUserItem(1L, BookingState.CURRENT, null, null); } catch (Exception e) {}
+        try {
+            client.getBookingsByUserItem(1L, BookingState.ALL, 0, 10);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        try {
+            client.getBookingsByUserItem(1L, BookingState.CURRENT, null, null);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
     }
-
 
 
 }

@@ -1,3 +1,4 @@
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import ru.practicum.shareit.item.CommentDto;
@@ -5,6 +6,8 @@ import ru.practicum.shareit.item.ItemClient;
 import ru.practicum.shareit.item.ItemDto;
 
 import java.time.LocalDateTime;
+
+@Slf4j
 class ItemClientCoverageLineTest {
 
     @Test
@@ -20,35 +23,71 @@ class ItemClientCoverageLineTest {
     }
 
     private void callAllMethodsWithFallback(ItemClient client) {
-        try { client.getItemsByUser(1L, 0, 10); } catch (Exception e) {}
-        try { client.getItemsByUser(1L, null, null); } catch (Exception e) {}
+        try {
+            client.getItemsByUser(1L, 0, 10);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        try {
+            client.getItemsByUser(1L, null, null);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
 
-        try { client.getItemById(123L, 1L); } catch (Exception e) {}
+        try {
+            client.getItemById(123L, 1L);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
 
         try {
             ItemDto itemDto = createMinimalItemDto();
             client.create(1L, itemDto);
         } catch (Exception e) {
-            try { client.create(1L, null); } catch (Exception e2) {}
+            try {
+                client.create(1L, null);
+            } catch (Exception e2) {
+                log.error(e.getMessage());
+            }
         }
 
         try {
             ItemDto itemDto = createMinimalItemDto();
             client.edit(123L, 1L, itemDto);
         } catch (Exception e) {
-            try { client.edit(123L, 1L, null); } catch (Exception e2) {}
+            try {
+                client.edit(123L, 1L, null);
+            } catch (Exception e2) {
+                log.error(e.getMessage());
+            }
         }
 
-        try { client.delete(123L, 1L); } catch (Exception e) {}
+        try {
+            client.delete(123L, 1L);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
 
-        try { client.search("test", 1L, 0, 10); } catch (Exception e) {}
-        try { client.search("", 1L, null, null); } catch (Exception e) {}
+        try {
+            client.search("test", 1L, 0, 10);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        try {
+            client.search("", 1L, null, null);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
 
         try {
             CommentDto commentDto = createMinimalCommentDto();
             client.postComment(123L, 1L, commentDto);
         } catch (Exception e) {
-            try { client.postComment(123L, 1L, null); } catch (Exception e2) {}
+            try {
+                client.postComment(123L, 1L, null);
+            } catch (Exception e2) {
+                log.error(e.getMessage());
+            }
         }
     }
 
