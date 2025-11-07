@@ -32,6 +32,7 @@ class BookingClientTest {
         bookingClient = new BookingClientTestRef(restTemplate);
     }
 
+
     @Test
     @DisplayName("getBookings - базовый тест")
     void getBookings_basicTest() {
