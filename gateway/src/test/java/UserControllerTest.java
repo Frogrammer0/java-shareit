@@ -13,6 +13,7 @@ import ru.practicum.shareit.user.UserDto;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,11 +33,9 @@ class UserControllerTest {
     @Test
     @DisplayName("GET /users - успешный запрос всех пользователей")
     void getAllUsers_ok() throws Exception {
-        // Given
         Mockito.when(userClient.getAllUsers(any(Long.class), any(Integer.class), any(Integer.class)))
                 .thenReturn(org.springframework.http.ResponseEntity.ok().build());
 
-        // When & Then
         mockMvc.perform(get("/users")
                         .header("X-Sharer-User-Id", 1)
                         .param("from", "0")
@@ -47,11 +46,9 @@ class UserControllerTest {
     @Test
     @DisplayName("GET /users - успешный запрос с параметрами по умолчанию")
     void getAllUsers_withDefaultParams() throws Exception {
-        // Given
         Mockito.when(userClient.getAllUsers(any(Long.class), any(Integer.class), any(Integer.class)))
                 .thenReturn(org.springframework.http.ResponseEntity.ok().build());
 
-        // When & Then
         mockMvc.perform(get("/users")
                         .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isOk());
@@ -70,11 +67,9 @@ class UserControllerTest {
     @Test
     @DisplayName("GET /users/{userId} - успешный запрос пользователя по ID")
     void getUserById_ok() throws Exception {
-        // Given
         Mockito.when(userClient.getUserById(any(Long.class)))
                 .thenReturn(org.springframework.http.ResponseEntity.ok().build());
 
-        // When & Then
         mockMvc.perform(get("/users/1"))
                 .andExpect(status().isOk());
     }
@@ -82,11 +77,9 @@ class UserControllerTest {
     @Test
     @DisplayName("GET /users/{userId} - с различными ID")
     void getUserById_differentIds() throws Exception {
-        // Given
         Mockito.when(userClient.getUserById(any(Long.class)))
                 .thenReturn(org.springframework.http.ResponseEntity.ok().build());
 
-        // Test with different IDs
         mockMvc.perform(get("/users/1"))
                 .andExpect(status().isOk());
 
@@ -100,7 +93,6 @@ class UserControllerTest {
     @Test
     @DisplayName("POST /users - успешное создание пользователя")
     void create_ok() throws Exception {
-        // Given
         String json = "{\n" +
                 "  \"name\": \"John Doe\",\n" +
                 "  \"email\": \"john@example.com\"\n" +
@@ -109,7 +101,6 @@ class UserControllerTest {
         Mockito.when(userClient.create(any(UserDto.class)))
                 .thenReturn(org.springframework.http.ResponseEntity.ok().build());
 
-        // When & Then
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -136,7 +127,6 @@ class UserControllerTest {
     @Test
     @DisplayName("PATCH /users/{userId} - успешное обновление пользователя")
     void edit_ok() throws Exception {
-        // Given
         String json = "{\n" +
                 "  \"name\": \"John Updated\",\n" +
                 "  \"email\": \"john.updated@example.com\"\n" +
@@ -145,7 +135,6 @@ class UserControllerTest {
         Mockito.when(userClient.edit(any(Long.class), any(UserDto.class)))
                 .thenReturn(org.springframework.http.ResponseEntity.ok().build());
 
-        // When & Then
         mockMvc.perform(patch("/users/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -155,7 +144,6 @@ class UserControllerTest {
     @Test
     @DisplayName("PATCH /users/{userId} - успешное обновление только имени")
     void edit_onlyName() throws Exception {
-        // Given
         String json = "{\n" +
                 "  \"name\": \"John Updated\"\n" +
                 "}";
@@ -163,7 +151,6 @@ class UserControllerTest {
         Mockito.when(userClient.edit(any(Long.class), any(UserDto.class)))
                 .thenReturn(org.springframework.http.ResponseEntity.ok().build());
 
-        // When & Then
         mockMvc.perform(patch("/users/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -173,7 +160,6 @@ class UserControllerTest {
     @Test
     @DisplayName("PATCH /users/{userId} - успешное обновление только email")
     void edit_onlyEmail() throws Exception {
-        // Given
         String json = "{\n" +
                 "  \"email\": \"john.updated@example.com\"\n" +
                 "}";
@@ -181,7 +167,6 @@ class UserControllerTest {
         Mockito.when(userClient.edit(any(Long.class), any(UserDto.class)))
                 .thenReturn(org.springframework.http.ResponseEntity.ok().build());
 
-        // When & Then
         mockMvc.perform(patch("/users/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -191,7 +176,6 @@ class UserControllerTest {
     @Test
     @DisplayName("PATCH /users/{userId} - с различными ID")
     void edit_differentIds() throws Exception {
-        // Given
         String json = "{\n" +
                 "  \"name\": \"Updated Name\"\n" +
                 "}";
@@ -199,7 +183,6 @@ class UserControllerTest {
         Mockito.when(userClient.edit(any(Long.class), any(UserDto.class)))
                 .thenReturn(org.springframework.http.ResponseEntity.ok().build());
 
-        // Test with different IDs
         mockMvc.perform(patch("/users/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -214,11 +197,9 @@ class UserControllerTest {
     @Test
     @DisplayName("DELETE /users/{userId} - успешное удаление пользователя")
     void delete_ok() throws Exception {
-        // Given
         Mockito.when(userClient.delete(any(Long.class)))
                 .thenReturn(org.springframework.http.ResponseEntity.ok().build());
 
-        // When & Then
         mockMvc.perform(delete("/users/1"))
                 .andExpect(status().isOk());
     }
@@ -226,11 +207,9 @@ class UserControllerTest {
     @Test
     @DisplayName("DELETE /users/{userId} - с различными ID")
     void delete_differentIds() throws Exception {
-        // Given
         Mockito.when(userClient.delete(any(Long.class)))
                 .thenReturn(org.springframework.http.ResponseEntity.ok().build());
 
-        // Test with different IDs
         mockMvc.perform(delete("/users/1"))
                 .andExpect(status().isOk());
 
@@ -244,11 +223,9 @@ class UserControllerTest {
     @Test
     @DisplayName("POST /users - с различными валидными данными")
     void create_differentValidData() throws Exception {
-        // Given
         Mockito.when(userClient.create(any(UserDto.class)))
                 .thenReturn(org.springframework.http.ResponseEntity.ok().build());
 
-        // Test with different valid names and emails
         String json1 = "{\"name\": \"Alice\", \"email\": \"alice@example.com\"}";
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -271,7 +248,6 @@ class UserControllerTest {
     @Test
     @DisplayName("Все endpoints - логируются")
     void allEndpoints_areLogged() throws Exception {
-        // Этот тест проверяет что вызовы проходят через контроллер и логируются
         Mockito.when(userClient.getAllUsers(any(Long.class), any(Integer.class), any(Integer.class)))
                 .thenReturn(org.springframework.http.ResponseEntity.ok().build());
         Mockito.when(userClient.getUserById(any(Long.class)))
@@ -283,7 +259,6 @@ class UserControllerTest {
         Mockito.when(userClient.delete(any(Long.class)))
                 .thenReturn(org.springframework.http.ResponseEntity.ok().build());
 
-        // Test all endpoints
         String userJson = "{\"name\": \"Test User\", \"email\": \"test@example.com\"}";
 
         mockMvc.perform(get("/users")

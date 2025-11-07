@@ -52,14 +52,12 @@ class ItemControllerTest {
 
     @Test
     void getAllItemsByUser_WhenValidRequest_ShouldReturnItems() throws Exception {
-        // Arrange
         Long userId = 1L;
         String expectedResponse = "{\"items\": []}";
 
         when(itemClient.getItemsByUser(eq(userId), anyInt(), anyInt()))
                 .thenReturn(new ResponseEntity<>(expectedResponse, HttpStatus.OK));
 
-        // Act & Assert
         mockMvc.perform(get("/items")
                         .header("X-Sharer-User-Id", userId)
                         .param("from", "0")
@@ -71,7 +69,6 @@ class ItemControllerTest {
 
     @Test
     void getAllItemsByUser_WhenMissingUserIdHeader_ShouldReturnBadRequest() throws Exception {
-        // Act & Assert
         mockMvc.perform(get("/items")
                         .param("from", "0")
                         .param("size", "10"))
@@ -80,7 +77,6 @@ class ItemControllerTest {
 
     @Test
     void getItemById_WhenValidRequest_ShouldReturnItem() throws Exception {
-        // Arrange
         Long userId = 1L;
         Long itemId = 1L;
         String expectedResponse = "{\"id\": 1, \"name\": \"Test Item\"}";
@@ -88,7 +84,6 @@ class ItemControllerTest {
         when(itemClient.getItemById(itemId, userId))
                 .thenReturn(new ResponseEntity<>(expectedResponse, HttpStatus.OK));
 
-        // Act & Assert
         mockMvc.perform(get("/items/{itemId}", itemId)
                         .header("X-Sharer-User-Id", userId))
                 .andExpect(status().isOk())
@@ -97,7 +92,6 @@ class ItemControllerTest {
 
     @Test
     void create_WhenValidRequest_ShouldCreateItem() throws Exception {
-        // Arrange
         Long userId = 1L;
         ItemDto itemDto = createTestItemDto();
         String expectedResponse = "{\"id\": 1, \"name\": \"Test Item\"}";
@@ -105,7 +99,6 @@ class ItemControllerTest {
         when(itemClient.create(eq(userId), any(ItemDto.class)))
                 .thenReturn(new ResponseEntity<>(expectedResponse, HttpStatus.OK));
 
-        // Act & Assert
         mockMvc.perform(post("/items")
                         .header("X-Sharer-User-Id", userId)
                         .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
@@ -117,10 +110,8 @@ class ItemControllerTest {
 
     @Test
     void create_WhenMissingUserIdHeader_ShouldReturnBadRequest() throws Exception {
-        // Arrange
         ItemDto itemDto = createTestItemDto();
 
-        // Act & Assert
         mockMvc.perform(post("/items")
                         .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(itemDto)))
@@ -129,7 +120,6 @@ class ItemControllerTest {
 
     @Test
     void edit_WhenValidRequest_ShouldUpdateItem() throws Exception {
-        // Arrange
         Long userId = 1L;
         Long itemId = 1L;
         ItemDto itemDto = ItemDto.builder()
@@ -142,7 +132,6 @@ class ItemControllerTest {
         when(itemClient.edit(eq(itemId), eq(userId), any(ItemDto.class)))
                 .thenReturn(new ResponseEntity<>(expectedResponse, HttpStatus.OK));
 
-        // Act & Assert
         mockMvc.perform(patch("/items/{itemId}", itemId)
                         .header("X-Sharer-User-Id", userId)
                         .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
@@ -153,18 +142,16 @@ class ItemControllerTest {
 
     @Test
     void edit_WhenPartialUpdate_ShouldWork() throws Exception {
-        // Arrange
         Long userId = 1L;
         Long itemId = 1L;
         ItemDto partialUpdateDto = ItemDto.builder()
                 .name("Only Name Updated")
-                .build(); // description and available are null - should be fine for PATCH
+                .build();
         String expectedResponse = "{\"id\": 1, \"name\": \"Only Name Updated\"}";
 
         when(itemClient.edit(eq(itemId), eq(userId), any(ItemDto.class)))
                 .thenReturn(new ResponseEntity<>(expectedResponse, HttpStatus.OK));
 
-        // Act & Assert
         mockMvc.perform(patch("/items/{itemId}", itemId)
                         .header("X-Sharer-User-Id", userId)
                         .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
@@ -175,7 +162,6 @@ class ItemControllerTest {
 
     @Test
     void delete_WhenValidRequest_ShouldDeleteItem() throws Exception {
-        // Arrange
         Long userId = 1L;
         Long itemId = 1L;
         String expectedResponse = "{\"message\": \"Item deleted\"}";
@@ -183,7 +169,6 @@ class ItemControllerTest {
         when(itemClient.delete(itemId, userId))
                 .thenReturn(new ResponseEntity<>(expectedResponse, HttpStatus.OK));
 
-        // Act & Assert
         mockMvc.perform(delete("/items/{itemId}", itemId)
                         .header("X-Sharer-User-Id", userId))
                 .andExpect(status().isOk())
@@ -192,7 +177,6 @@ class ItemControllerTest {
 
     @Test
     void searchItem_WhenValidRequest_ShouldReturnSearchResults() throws Exception {
-        // Arrange
         Long userId = 1L;
         String searchText = "test";
         String expectedResponse = "{\"items\": []}";
@@ -200,7 +184,6 @@ class ItemControllerTest {
         when(itemClient.search(eq(searchText), eq(userId), anyInt(), anyInt()))
                 .thenReturn(new ResponseEntity<>(expectedResponse, HttpStatus.OK));
 
-        // Act & Assert
         mockMvc.perform(get("/items/search")
                         .header("X-Sharer-User-Id", userId)
                         .param("text", searchText)
@@ -212,7 +195,6 @@ class ItemControllerTest {
 
     @Test
     void searchItem_WhenEmptySearchText_ShouldReturnEmptyList() throws Exception {
-        // Arrange
         Long userId = 1L;
         String emptySearchText = "";
         String expectedResponse = "{\"items\": []}";
@@ -220,7 +202,6 @@ class ItemControllerTest {
         when(itemClient.search(eq(emptySearchText), eq(userId), anyInt(), anyInt()))
                 .thenReturn(new ResponseEntity<>(expectedResponse, HttpStatus.OK));
 
-        // Act & Assert
         mockMvc.perform(get("/items/search")
                         .header("X-Sharer-User-Id", userId)
                         .param("text", emptySearchText)
@@ -233,7 +214,6 @@ class ItemControllerTest {
 
     @Test
     void postComment_WhenValidRequest_ShouldCreateComment() throws Exception {
-        // Arrange
         Long userId = 1L;
         Long itemId = 1L;
         CommentDto commentDto = createTestCommentDto();
@@ -242,7 +222,6 @@ class ItemControllerTest {
         when(itemClient.postComment(eq(itemId), eq(userId), any(CommentDto.class)))
                 .thenReturn(new ResponseEntity<>(expectedResponse, HttpStatus.OK));
 
-        // Act & Assert
         mockMvc.perform(post("/items/{itemId}/comment", itemId)
                         .header("X-Sharer-User-Id", userId)
                         .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
@@ -254,11 +233,9 @@ class ItemControllerTest {
 
     @Test
     void postComment_WhenMissingUserIdHeader_ShouldReturnBadRequest() throws Exception {
-        // Arrange
         Long itemId = 1L;
         CommentDto commentDto = createTestCommentDto();
 
-        // Act & Assert
         mockMvc.perform(post("/items/{itemId}/comment", itemId)
                         .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(commentDto)))
@@ -267,14 +244,12 @@ class ItemControllerTest {
 
     @Test
     void getAllItemsByUser_WithDefaultPagination_ShouldUseDefaults() throws Exception {
-        // Arrange
         Long userId = 1L;
         String expectedResponse = "{\"items\": []}";
 
         when(itemClient.getItemsByUser(eq(userId), eq(0), eq(10)))
                 .thenReturn(new ResponseEntity<>(expectedResponse, HttpStatus.OK));
 
-        // Act & Assert - without pagination parameters
         mockMvc.perform(get("/items")
                         .header("X-Sharer-User-Id", userId))
                 .andExpect(status().isOk())
@@ -283,7 +258,6 @@ class ItemControllerTest {
 
     @Test
     void searchItem_WithDefaultPagination_ShouldUseDefaults() throws Exception {
-        // Arrange
         Long userId = 1L;
         String searchText = "test";
         String expectedResponse = "{\"items\": []}";
@@ -291,7 +265,6 @@ class ItemControllerTest {
         when(itemClient.search(eq(searchText), eq(userId), eq(0), eq(10)))
                 .thenReturn(new ResponseEntity<>(expectedResponse, HttpStatus.OK));
 
-        // Act & Assert - without pagination parameters
         mockMvc.perform(get("/items/search")
                         .header("X-Sharer-User-Id", userId)
                         .param("text", searchText))
