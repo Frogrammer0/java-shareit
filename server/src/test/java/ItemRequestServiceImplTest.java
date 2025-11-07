@@ -12,11 +12,12 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserValidator;
 
+
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,6 +76,8 @@ class ItemRequestServiceImplTest {
     }
 
 
+
+
     @Test
     void getRequestById_ShouldReturnRequest() {
         long requestId = 1L;
@@ -100,4 +103,28 @@ class ItemRequestServiceImplTest {
 
         assertThrows(NotFoundException.class, () -> itemRequestService.getRequestById(requestId));
     }
+
+    @Test
+    void getRequestsByUser_WithEmptyResult_ShouldReturnEmptyList() {
+        long userId = 1L;
+        doNothing().when(userValidator).isUserExists(userId);
+        when(requestRepository.findAllByRequestorId(userId)).thenReturn(List.of());
+
+        List<ItemRequestDto> result = itemRequestService.getRequestsByUser(userId);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getAllRequests_WithEmptyResult_ShouldReturnEmptyList() {
+        when(requestRepository.findAllRequests(0, 10)).thenReturn(List.of());
+
+        List<ItemRequestDto> result = itemRequestService.getAllRequests(0, 10);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+
 }
