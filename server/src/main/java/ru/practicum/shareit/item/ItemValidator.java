@@ -22,51 +22,12 @@ public class ItemValidator {
         this.bookingRepository = bookingRepository;
     }
 
-    public void validate(ItemDto itemDto) {
-        validateName(itemDto.getName());
-        validateDescription(itemDto.getDescription());
-        validateAvailable(itemDto.getAvailable());
-    }
-
-    public void validateName(String name) {
-        log.info("валидация названия вещи");
-
-        if (name == null || name.isBlank()) {
-            log.error("не указано название");
-            throw new ValidationException("не указано название");
-        }
-    }
-
-    public void validateAvailable(Boolean available) {
-        log.info("валидация доступности вещи");
-        if (available == null) {
-            log.error("не указан статус вещи");
-            throw new ValidationException("не указан статус вещи");
-        }
-    }
-
-    public void validateDescription(String description) {
-        log.info("валидация описания");
-        if (description == null || description.isBlank()) {
-            log.error("не указано описание");
-            throw new ValidationException("не указано описание");
-        }
-    }
-
     public void validateUsed(long itemId, long userId) {
         LocalDateTime now = LocalDateTime.now();
         log.info("проверка возможности оставлять комментарий for userId = {}, itemId = {}", userId, itemId);
         if (!bookingRepository.existsByBookerIdAndItemIdAndEndBefore(userId, itemId, now)) {
             log.error("пользователь не пользовался данной вещью");
             throw new ValidationException("пользователь не пользовался данной вещью");
-        }
-    }
-
-    public void validateComment(CommentDto commentDto) {
-        log.info("проверка текста комментария");
-        if (commentDto.getText() == null || commentDto.getText().isBlank()) {
-            log.error("комментарий пуст");
-            throw new ValidationException("комментарий не должен быть пуст");
         }
     }
 

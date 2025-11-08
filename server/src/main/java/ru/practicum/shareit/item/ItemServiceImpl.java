@@ -96,7 +96,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto create(ItemDto itemDto, long userId) {
         log.info("вызван метод create в ItemService");
-        itemValidator.validate(itemDto);
         User user = getUserOrThrow(userId);
         Item item = itemMapper.toItem(itemDto, user);
         if (itemDto.getRequestId() != null) {
@@ -134,10 +133,6 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> search(String query, int from, int size) {
         log.info("вызван метод search в ItemService");
 
-        if (query.isBlank()) {
-            return List.of();
-        }
-
         List<Item> items = itemRepository.searchAvailableItems(query, from, size);
 
         List<Long> itemsId = items.stream().map(Item::getId).toList();
@@ -155,10 +150,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public CommentDto postComment(long itemId, long userId, CommentDto commentDto) {
         log.info("вызван метод postComment в ItemService");
-        List<Booking> booking = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
         commentDto.setCreated(LocalDateTime.now());
         itemValidator.validateUsed(itemId, userId);
-        itemValidator.validateComment(commentDto);
         User author = getUserOrThrow(userId);
         Item item = getItemOrThrow(itemId);
         Comment comment = commentMapper.toComment(commentDto, item, author);

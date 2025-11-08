@@ -103,7 +103,6 @@ class ItemServiceImplTest {
         Item item = Item.builder().id(1L).build();
         ItemDto savedDto = ItemDto.builder().id(1L).build();
 
-        doNothing().when(itemValidator).validate(itemDto);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(itemMapper.toItem(itemDto, user)).thenReturn(item);
         when(itemRepository.save(item)).thenReturn(item);
@@ -113,7 +112,6 @@ class ItemServiceImplTest {
         ItemDto result = itemService.create(itemDto, userId);
 
         assertNotNull(result);
-        verify(itemValidator).validate(itemDto);
         verify(userRepository).findById(userId);
         verify(itemRepository).save(item);
     }
@@ -201,9 +199,6 @@ class ItemServiceImplTest {
         Comment comment = Comment.builder().id(1L).build();
         CommentDto savedDto = CommentDto.builder().id(1L).build();
 
-        when(bookingRepository.findAllByBookerIdOrderByStartDesc(userId)).thenReturn(List.of());
-        doNothing().when(itemValidator).validateUsed(itemId, userId);
-        doNothing().when(itemValidator).validateComment(commentDto);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
         when(commentMapper.toComment(commentDto, item, user)).thenReturn(comment);
@@ -213,8 +208,11 @@ class ItemServiceImplTest {
         CommentDto result = itemService.postComment(itemId, userId, commentDto);
 
         assertNotNull(result);
+        assertEquals(savedDto, result); // Добавил проверку результата
         verify(itemValidator).validateUsed(itemId, userId);
         verify(commentRepository).save(comment);
+        verify(userRepository).findById(userId);
+        verify(itemRepository).findById(itemId);
     }
 
 }

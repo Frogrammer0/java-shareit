@@ -1,6 +1,6 @@
 package ru.practicum.shareit.item;
 
-import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,8 +17,7 @@ public class CommentDto {
     long id;
     String authorName;
     ItemShortDto item;
+    @NotBlank
     String text;
-
-    @PastOrPresent
     LocalDateTime created;
 }

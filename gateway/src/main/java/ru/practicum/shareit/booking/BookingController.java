@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class BookingController {
     private final BookingClient bookingClient;
+    private final BookingValidator bookingValidator;
 
     @GetMapping("/{bookingId}")
     public ResponseEntity<Object> getBooking(@RequestHeader("X-Sharer-User-Id") long userId,
@@ -45,6 +46,7 @@ public class BookingController {
     public ResponseEntity<Object> bookItem(@RequestHeader("X-Sharer-User-Id") long userId,
                                            @RequestBody @Valid BookingRequestDto requestDto) {
         log.info("Creating booking {}, userId={}", requestDto, userId);
+        bookingValidator.validateDate(requestDto);
         return bookingClient.bookItem(userId, requestDto);
     }
 

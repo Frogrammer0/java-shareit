@@ -1,0 +1,38 @@
+package ru.practicum.shareit.user;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import ru.practicum.shareit.exceptions.ValidationException;
+
+@Slf4j
+@Component
+public class UserValidator {
+
+    public void validate(UserDto userDto) {
+        validateEmail(userDto.getEmail());
+        validateName(userDto.getName());
+    }
+
+    public void validateEmail(String email) {
+        log.info("валидация почты");
+
+        if (email == null || email.isBlank()) {
+            log.error("не указана почта");
+            throw new ValidationException("не указан емейл");
+        }
+
+        if (!email.contains("@")) {
+            log.error("почта введена в неверном формате");
+            throw new ValidationException("Неверный формат адреса почты: " + email);
+        }
+    }
+
+    public void validateName(String name) {
+        log.info("валидация имени");
+        if (name == null || name.isBlank()) {
+            log.error("не указано имя");
+            throw new ValidationException("не указано имя");
+        }
+    }
+
+}

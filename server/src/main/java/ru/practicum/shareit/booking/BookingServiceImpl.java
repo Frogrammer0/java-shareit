@@ -45,7 +45,7 @@ public class BookingServiceImpl implements BookingService {
         log.info("получение бронирования в BookingServiceImpl");
         userValidator.isUserExists(userId);
         Booking booking = getBookingOrThrow(bookingId);
-        bookingValidator.isBookerOrOwner(userId, booking);
+        bookingValidator. isBookerOrOwner(userId, booking);
         return bookingMapper.toBookingResponseDto(booking);
     }
 
@@ -73,7 +73,6 @@ public class BookingServiceImpl implements BookingService {
         log.info("создание бронирования в BookingServiceImpl для {}, userId = {}", bookingRequestDto, userId);
         User user = getUserOrThrow(userId);
         Item item = getItemOrThrow(bookingRequestDto.getItemId());
-        bookingValidator.validateDate(bookingRequestDto);
         bookingValidator.isItemAvailable(bookingRequestDto.getItemId());
         Booking booking = bookingMapper.toBooking(bookingRequestDto, item, user);
         booking.setStatus(Status.WAITING);

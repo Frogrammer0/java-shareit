@@ -40,7 +40,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto create(UserDto userDto) {
         log.info("создание пользователя в UserService {}", userDto);
-        userValidator.validate(userDto);
         userValidator.isMailExists(userDto.getEmail());
         User user = userMapper.toUser(userDto);
         return userMapper.toUserDto(userRepository.save(user));

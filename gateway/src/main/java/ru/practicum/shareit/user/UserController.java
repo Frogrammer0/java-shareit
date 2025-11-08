@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class UserController {
     private final UserClient userClient;
+    private final UserValidator userValidator;
 
     @GetMapping
     public ResponseEntity<Object> getAllUsers(
@@ -39,6 +40,7 @@ public class UserController {
             @RequestBody @Valid UserDto userDto
             ) {
         log.info("Create user with userDto={}", userDto);
+        userValidator.validate(userDto);
         return userClient.create(userDto);
     }
 

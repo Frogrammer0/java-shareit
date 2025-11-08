@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.exceptions.DuplicatedDataException;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.user.*;
 
 import java.util.List;
@@ -162,7 +161,6 @@ class UserServiceImplTest {
 
         UserDto expectedDto = createTestUserDto();
 
-        doNothing().when(userValidator).validate(userDto);
         doNothing().when(userValidator).isMailExists(userDto.getEmail());
         when(userMapper.toUser(userDto)).thenReturn(user);
         when(userRepository.save(user)).thenReturn(savedUser);
@@ -172,31 +170,10 @@ class UserServiceImplTest {
 
         assertNotNull(result);
         assertEquals(expectedDto, result);
-        verify(userValidator).validate(userDto);
         verify(userValidator).isMailExists(userDto.getEmail());
         verify(userMapper).toUser(userDto);
         verify(userRepository).save(user);
         verify(userMapper).toUserDto(savedUser);
-    }
-
-    @Test
-    void create_WhenInvalidUser_ShouldThrowValidationException() {
-        UserDto invalidUserDto = UserDto.builder()
-                .name("")
-                .email("invalid-email")
-                .build();
-
-        doThrow(new ValidationException("Invalid data"))
-                .when(userValidator).validate(invalidUserDto);
-
-
-        ValidationException exception = assertThrows(ValidationException.class,
-                () -> userService.create(invalidUserDto));
-
-        assertNotNull(exception);
-        verify(userValidator).validate(invalidUserDto);
-        verify(userValidator, never()).isMailExists(anyString());
-        verify(userRepository, never()).save(any(User.class));
     }
 
     @Test
@@ -206,7 +183,6 @@ class UserServiceImplTest {
                 .email("existing@email.com")
                 .build();
 
-        doNothing().when(userValidator).validate(userDto);
         doThrow(new DuplicatedDataException("Email already exists"))
                 .when(userValidator).isMailExists(userDto.getEmail());
 
@@ -214,7 +190,6 @@ class UserServiceImplTest {
                 () -> userService.create(userDto));
 
         assertNotNull(exception);
-        verify(userValidator).validate(userDto);
         verify(userValidator).isMailExists(userDto.getEmail());
         verify(userRepository, never()).save(any(User.class));
     }

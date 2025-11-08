@@ -7,9 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.exceptions.DuplicatedDataException;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserDto;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserValidator;
 
@@ -27,81 +25,6 @@ class UserValidatorTest {
 
     @InjectMocks
     private UserValidator userValidator;
-
-    @Test
-    void validate_WhenValidUserDto_ShouldNotThrowException() {
-        UserDto validUserDto = UserDto.builder()
-                .name("Valid User")
-                .email("valid@email.com")
-                .build();
-
-        assertDoesNotThrow(() -> userValidator.validate(validUserDto));
-    }
-
-    @Test
-    void validate_WhenNullName_ShouldThrowValidationException() {
-        UserDto invalidUserDto = UserDto.builder()
-                .name(null)
-                .email("valid@email.com")
-                .build();
-
-        ValidationException exception = assertThrows(ValidationException.class,
-                () -> userValidator.validate(invalidUserDto));
-
-        assertTrue(exception.getMessage().contains("не указано имя"));
-    }
-
-    @Test
-    void validate_WhenBlankName_ShouldThrowValidationException() {
-        UserDto invalidUserDto = UserDto.builder()
-                .name("   ")
-                .email("valid@email.com")
-                .build();
-
-        ValidationException exception = assertThrows(ValidationException.class,
-                () -> userValidator.validate(invalidUserDto));
-
-        assertTrue(exception.getMessage().contains("не указано имя"));
-    }
-
-    @Test
-    void validate_WhenNullEmail_ShouldThrowValidationException() {
-        UserDto invalidUserDto = UserDto.builder()
-                .name("Valid User")
-                .email(null)
-                .build();
-
-        ValidationException exception = assertThrows(ValidationException.class,
-                () -> userValidator.validate(invalidUserDto));
-
-        assertTrue(exception.getMessage().contains("не указан емейл"));
-    }
-
-    @Test
-    void validate_WhenBlankEmail_ShouldThrowValidationException() {
-        UserDto invalidUserDto = UserDto.builder()
-                .name("Valid User")
-                .email("   ")
-                .build();
-
-        ValidationException exception = assertThrows(ValidationException.class,
-                () -> userValidator.validate(invalidUserDto));
-
-        assertTrue(exception.getMessage().contains("не указан емейл"));
-    }
-
-    @Test
-    void validate_WhenInvalidEmailFormat_ShouldThrowValidationException() {
-        UserDto invalidUserDto = UserDto.builder()
-                .name("Valid User")
-                .email("invalid-email")
-                .build();
-
-        ValidationException exception = assertThrows(ValidationException.class,
-                () -> userValidator.validate(invalidUserDto));
-
-        assertTrue(exception.getMessage().contains("Неверный формат адреса почты"));
-    }
 
     @Test
     void isUserExists_WhenUserExists_ShouldNotThrowException() {

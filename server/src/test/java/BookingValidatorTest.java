@@ -6,15 +6,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingValidator;
 import ru.practicum.shareit.booking.Status;
-import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.exceptions.ForbiddenException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.item.model.Item;
-
-import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -30,71 +27,6 @@ class BookingValidatorTest {
     @BeforeEach
     void setUp() {
         bookingValidator = new BookingValidator(itemRepository, null);
-    }
-
-    @Test
-    void validateDate_WhenDatesAreValid_ShouldNotThrowException() {
-        BookingRequestDto bookingRequestDto = new BookingRequestDto();
-        bookingRequestDto.setStart(LocalDateTime.now().plusHours(1));
-        bookingRequestDto.setEnd(LocalDateTime.now().plusHours(2));
-
-        assertDoesNotThrow(() -> bookingValidator.validateDate(bookingRequestDto));
-    }
-
-    @Test
-    void validateDate_WhenStartIsNull_ShouldThrowValidationException() {
-        BookingRequestDto bookingRequestDto = new BookingRequestDto();
-        bookingRequestDto.setStart(null);
-        bookingRequestDto.setEnd(LocalDateTime.now().plusHours(1));
-
-        ValidationException exception = assertThrows(ValidationException.class,
-                () -> bookingValidator.validateDate(bookingRequestDto));
-        assertEquals("Дата начала и окончания бронирования не могут быть пустыми", exception.getMessage());
-    }
-
-    @Test
-    void validateDate_WhenEndIsNull_ShouldThrowValidationException() {
-        BookingRequestDto bookingRequestDto = new BookingRequestDto();
-        bookingRequestDto.setStart(LocalDateTime.now().plusHours(1));
-        bookingRequestDto.setEnd(null);
-
-        ValidationException exception = assertThrows(ValidationException.class,
-                () -> bookingValidator.validateDate(bookingRequestDto));
-        assertEquals("Дата начала и окончания бронирования не могут быть пустыми", exception.getMessage());
-    }
-
-    @Test
-    void validateDate_WhenStartAfterEnd_ShouldThrowValidationException() {
-        BookingRequestDto bookingRequestDto = new BookingRequestDto();
-        bookingRequestDto.setStart(LocalDateTime.now().plusHours(2));
-        bookingRequestDto.setEnd(LocalDateTime.now().plusHours(1));
-
-        ValidationException exception = assertThrows(ValidationException.class,
-                () -> bookingValidator.validateDate(bookingRequestDto));
-        assertEquals("Дата начала бронирования должна быть раньше даты окончания", exception.getMessage());
-    }
-
-    @Test
-    void validateDate_WhenStartEqualsEnd_ShouldThrowValidationException() {
-        LocalDateTime sameTime = LocalDateTime.now().plusHours(1);
-        BookingRequestDto bookingRequestDto = new BookingRequestDto();
-        bookingRequestDto.setStart(sameTime);
-        bookingRequestDto.setEnd(sameTime);
-
-        ValidationException exception = assertThrows(ValidationException.class,
-                () -> bookingValidator.validateDate(bookingRequestDto));
-        assertEquals("Дата начала бронирования должна быть раньше даты окончания", exception.getMessage());
-    }
-
-    @Test
-    void validateDate_WhenStartInPast_ShouldThrowValidationException() {
-        BookingRequestDto bookingRequestDto = new BookingRequestDto();
-        bookingRequestDto.setStart(LocalDateTime.now().minusHours(1));
-        bookingRequestDto.setEnd(LocalDateTime.now().plusHours(1));
-
-        ValidationException exception = assertThrows(ValidationException.class,
-                () -> bookingValidator.validateDate(bookingRequestDto));
-        assertEquals("Дата начала бронирования не может быть в прошлом", exception.getMessage());
     }
 
     @Test

@@ -134,7 +134,6 @@ class BookingServiceImplTest {
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
-        doNothing().when(bookingValidator).validateDate(requestDto);
         doNothing().when(bookingValidator).isItemAvailable(itemId);
         when(bookingMapper.toBooking(requestDto, item, user)).thenReturn(booking);
         when(bookingRepository.save(booking)).thenReturn(booking);
@@ -146,7 +145,6 @@ class BookingServiceImplTest {
         assertEquals(expectedDto, result);
         assertEquals(Status.WAITING, booking.getStatus());
         verify(bookingRepository).save(booking);
-        verify(bookingValidator).validateDate(requestDto);
         verify(bookingValidator).isItemAvailable(itemId);
     }
 

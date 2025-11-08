@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping(path = "/items")
 @RequiredArgsConstructor
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class ItemController {
     private final ItemClient itemClient;
+    private final ItemValidator itemValidator;
 
     @GetMapping
     public ResponseEntity<Object> getAllItemsByUser(
@@ -43,6 +46,7 @@ public class ItemController {
             @RequestBody @Valid ItemDto itemDto
     ) {
         log.info("Creating item with userId={}, item={}", userId, itemDto);
+        itemValidator.validate(itemDto);
         return itemClient.create(userId, itemDto);
     }
 
@@ -74,6 +78,9 @@ public class ItemController {
 
     ) {
         log.info("Search item with userId={}, text={}", userId, text);
+        if (text.isBlank()) {
+            return ResponseEntity.ok().body(List.of());
+        }
         return itemClient.search(text, userId, from, size);
     }
 
@@ -84,6 +91,7 @@ public class ItemController {
             @RequestBody @Valid CommentDto commentDto
     ) {
         log.info("Post comment with itemId = {}, userId={}, comment={}", itemId, userId, commentDto.getText());
+        itemValidator.validateComment(commentDto);
         return itemClient.postComment(itemId, userId, commentDto);
     }
 }

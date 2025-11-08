@@ -197,10 +197,6 @@ class ItemControllerTest {
     void searchItem_WhenEmptySearchText_ShouldReturnEmptyList() throws Exception {
         Long userId = 1L;
         String emptySearchText = "";
-        String expectedResponse = "{\"items\": []}";
-
-        when(itemClient.search(eq(emptySearchText), eq(userId), anyInt(), anyInt()))
-                .thenReturn(new ResponseEntity<>(expectedResponse, HttpStatus.OK));
 
         mockMvc.perform(get("/items/search")
                         .header("X-Sharer-User-Id", userId)
@@ -208,7 +204,7 @@ class ItemControllerTest {
                         .param("from", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk())
-                .andExpect(content().json(expectedResponse));
+                .andExpect(content().json("[]")); // Пустой JSON массив
     }
 
 
